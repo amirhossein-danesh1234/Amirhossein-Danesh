@@ -1,7 +1,8 @@
 ---
-import type { SocialLink } from '../data/profile';
-const { links } = Astro.props as { links: readonly SocialLink[] };
+import type { SocialLink } from '../data/en/profile';
+import type { Locale } from '../i18n/config';
+const { links, locale } = Astro.props as { links: readonly SocialLink[]; locale: Locale };
 ---
 <div class="social-links" aria-label="External links">
-  {links.filter((link) => link.href).map((link) => <a class="social-link" href={link.href} target={link.external ? '_blank' : undefined} rel={link.external ? 'noreferrer' : undefined}>{link.label}{link.external ? ' ↗' : ''}</a>)}
+  {links.filter((link) => link.href).map((link) => <a class="social-link" href={link.href} target={link.external ? '_blank' : undefined} rel={link.external ? 'noreferrer' : undefined}>{link.label}{link.external ? (locale === 'fa' ? ' ↖' : ' ↗') : ''}</a>)}
 </div>

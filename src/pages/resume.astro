@@ -1,11 +1,10 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import { profile } from '../data/profile';
-import { work } from '../data/work';
-import { projects } from '../data/projects';
-import { academic } from '../data/academic';
-import { skills } from '../data/skills';
+import LocalizedResume from '../components/LocalizedResume.astro';
+import { profile } from '../data/en/profile';
+import { work } from '../data/en/work';
+import { projects } from '../data/en/projects';
+import { academic } from '../data/en/academic';
+import { skills } from '../data/en/skills';
 ---
-<BaseLayout title="Resume — AmirHossein Danesh" description="A concise printable resume for AmirHossein Danesh." currentPath="/resume">
-  <main class="resume-page"><div class="resume-heading"><div><p class="eyebrow">RESUME</p><h1>{profile.name}</h1><p>{profile.title}</p></div></div><section class="resume-section"><h2>Profile</h2><p>{profile.bio}</p></section><section class="resume-section"><h2>Work</h2>{work.map((entry) => <div class="resume-entry"><h3>{entry.organization}</h3><p class="muted">{entry.role}{entry.startDate && ` · ${entry.startDate} — ${entry.endDate || 'Present'}`}</p>{entry.description && <p>{entry.description}</p>}</div>)}</section><section class="resume-section"><h2>Projects</h2>{projects.map((project) => <div class="resume-entry"><h3>{project.title}</h3>{project.role && <p class="muted">{project.role}</p>}{project.description && <p>{project.description}</p>}</div>)}</section><section class="resume-section"><h2>Academic</h2><div class="resume-entry"><h3>{academic.degree}</h3><p>{academic.university}</p></div></section><section class="resume-section"><h2>Areas</h2><p>{skills.map((skill) => skill.name).join(' · ')}</p></section></main>
-</BaseLayout>
+
+<LocalizedResume locale="en" profile={profile} work={work} projects={projects} academic={academic} skills={skills} />

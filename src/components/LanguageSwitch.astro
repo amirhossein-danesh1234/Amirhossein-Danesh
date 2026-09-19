@@ -1,0 +1,8 @@
+---
+import type { Locale } from '../i18n/config';
+import { alternatePath } from '../i18n/paths';
+import { messages } from '../i18n/messages';
+const { locale, currentPath } = Astro.props as { locale: Locale; currentPath: string };
+const copy = messages[locale];
+---
+<a class="language-switch" href={alternatePath(locale, currentPath)} lang={locale === 'en' ? 'fa' : 'en'} aria-label={locale === 'en' ? copy.labels.switchToPersian : copy.labels.switchToEnglish}>{copy.nav.language}</a>

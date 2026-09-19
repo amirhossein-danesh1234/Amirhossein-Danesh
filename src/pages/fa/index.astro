@@ -1,0 +1,11 @@
+---
+import LocalizedHome from '../../components/LocalizedHome.astro';
+import { profile } from '../../data/fa/profile';
+import { nowItems } from '../../data/fa/now';
+import { projects } from '../../data/fa/projects';
+import { work } from '../../data/fa/work';
+import { academic } from '../../data/fa/academic';
+import { skills } from '../../data/fa/skills';
+---
+
+<LocalizedHome locale="fa" profile={profile} nowItems={nowItems} work={work} projects={projects} academic={academic} skills={skills} />

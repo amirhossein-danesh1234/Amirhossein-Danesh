@@ -1,0 +1,1 @@
+export const academic = { university: 'دانشگاه صنعتی امیرکبیر', degree: 'کارشناسی فیزیک', selectedCoursework: [] as string[], activities: [] as string[], researchInterests: [] as string[], events: [] as string[] };

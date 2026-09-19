@@ -1,0 +1,5 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'; import PageHeader from './PageHeader.astro'; import type { Locale } from '../i18n/config'; import type { SkillGroup } from '../data/en/skills'; import { messages } from '../i18n/messages';
+type Profile = { name: string }; const { locale, profile, skills } = Astro.props as { locale: Locale; profile: Profile; skills: SkillGroup[] }; const copy = messages[locale];
+---
+<BaseLayout title={`${copy.nav.skills} — ${profile.name}`} description={copy.pages.skills.description} currentPath="/skills" locale={locale}><main class="content-page"><PageHeader eyebrow={copy.pages.skills.eyebrow} title={copy.pages.skills.title} description={copy.pages.skills.description} /><div class="skill-list">{skills.map((group) => <section class="skill-group"><h2>{group.name}</h2>{group.items.length > 0 ? <ul>{group.items.map((item) => <li>{item}</li>)}</ul> : <p class="muted">{locale === 'fa' ? 'برای به‌روزرسانی.' : 'To be updated.'}</p>}</section>)}</div></main></BaseLayout>

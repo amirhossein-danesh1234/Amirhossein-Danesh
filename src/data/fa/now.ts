@@ -1,0 +1,1 @@
+export const nowItems = [{ label: 'در حال مطالعه', value: 'کارشناسی فیزیک در دانشگاه صنعتی امیرکبیر' }, { label: 'در حال ساخت', value: 'Baazargaan' }, { label: 'در حال بررسی', value: 'فیزیک × هوش مصنوعی × محصول' }];

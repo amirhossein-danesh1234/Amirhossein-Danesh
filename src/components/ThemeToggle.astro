@@ -1,4 +1,10 @@
-<button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark mode">
+---
+import type { Locale } from '../i18n/config';
+import { messages } from '../i18n/messages';
+const { locale } = Astro.props as { locale: Locale };
+const copy = messages[locale].labels;
+---
+<button class="theme-toggle" type="button" data-theme-toggle data-label-dark={copy.switchToDark} data-label-light={copy.switchToLight} aria-label={copy.switchToDark}>
   <svg class="theme-toggle__sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"/></svg>
   <svg class="theme-toggle__moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5 8.5 8.5 0 1 0 20.5 14.6Z"/></svg>
   <span class="theme-toggle__text">Theme</span>
@@ -9,8 +15,8 @@
     if (!button) return;
     const update = (theme) => {
       document.documentElement.dataset.theme = theme;
-      button.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
-      button.setAttribute('title', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+      button.setAttribute('aria-label', theme === 'dark' ? button.dataset.labelLight : button.dataset.labelDark);
+      button.setAttribute('title', theme === 'dark' ? button.dataset.labelLight : button.dataset.labelDark);
     };
     update(document.documentElement.dataset.theme || 'light');
     button.addEventListener('click', () => {

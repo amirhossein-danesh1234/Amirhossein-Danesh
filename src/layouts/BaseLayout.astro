@@ -1,34 +1,42 @@
 ---
 import '../styles/global.css';
 import SiteNav from '../components/SiteNav.astro';
-import { profile } from '../data/profile';
+import { profile } from '../data/en/profile';
+import type { Locale } from '../i18n/config';
+import { toLocalizedPath } from '../i18n/paths';
 
 interface Props {
   title: string;
   description: string;
   currentPath?: string;
   jsonLd?: object;
+  locale: Locale;
 }
 
-const { title, description, currentPath = Astro.url.pathname, jsonLd } = Astro.props;
-const canonical = new URL(currentPath, Astro.site ?? 'https://amirhossein-danesh.ir').toString();
+const { title, description, currentPath = '/', jsonLd, locale } = Astro.props;
+const canonical = new URL(toLocalizedPath(locale, currentPath), Astro.site ?? 'https://amirhossein-danesh.ir').toString();
 const schema = jsonLd ?? (currentPath === '/' ? {
   '@context': 'https://schema.org',
   '@type': 'Person',
   name: profile.name,
-  description: profile.bio,
+  description,
   url: 'https://amirhossein-danesh.ir',
   sameAs: profile.socialLinks.filter((link) => link.external && link.href).map((link) => link.href),
 } : undefined);
+const englishUrl = new URL(toLocalizedPath('en', currentPath), Astro.site ?? 'https://amirhossein-danesh.ir').toString();
+const persianUrl = new URL(toLocalizedPath('fa', currentPath), Astro.site ?? 'https://amirhossein-danesh.ir').toString();
 ---
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang={locale} dir={locale === 'fa' ? 'rtl' : 'ltr'} data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="en" href={englishUrl} />
+    <link rel="alternate" hreflang="fa" href={persianUrl} />
+    <link rel="alternate" hreflang="x-default" href={englishUrl} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
@@ -50,9 +58,9 @@ const schema = jsonLd ?? (currentPath === '/' ? {
   </head>
   <body>
     <div class="site-shell">
-      <SiteNav currentPath={currentPath} />
+      <SiteNav currentPath={currentPath} locale={locale} />
       <slot />
-      <footer class="site-footer"><span>© {new Date().getFullYear()} {profile.name}</span><a href="/resume">Resume ↗</a></footer>
+      <footer class="site-footer"><span>© {new Date().getFullYear()} {profile.name}</span><a href={toLocalizedPath(locale, '/resume')}>{locale === 'fa' ? 'رزومه' : 'Resume'} {locale === 'fa' ? '↖' : '↗'}</a></footer>
     </div>
   </body>
 </html>

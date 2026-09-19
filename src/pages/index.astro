@@ -1,32 +1,11 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import ProfileHeader from '../components/ProfileHeader.astro';
-import HomeSection from '../components/HomeSection.astro';
-import { nowItems } from '../data/now';
-import { work } from '../data/work';
-import { projects } from '../data/projects';
-import { academic } from '../data/academic';
-import { skills } from '../data/skills';
-import { profile } from '../data/profile';
+import LocalizedHome from '../components/LocalizedHome.astro';
+import { profile } from '../data/en/profile';
+import { nowItems } from '../data/en/now';
+import { projects } from '../data/en/projects';
+import { work } from '../data/en/work';
+import { academic } from '../data/en/academic';
+import { skills } from '../data/en/skills';
 ---
-<BaseLayout title={profile.name} description={profile.bio} currentPath="/">
-  <main>
-    <ProfileHeader />
-    <HomeSection label="NOW" number="01" tone="now" description="A short view of what is currently shaping my time." href="/about" linkLabel="More about me">
-      <dl class="now-list">{nowItems.map((item) => <div><dt>{item.label}</dt><dd>{item.value}</dd></div>)}</dl>
-    </HomeSection>
-    <HomeSection label="WORK" number="02" description="Product, startups and technical operations." href="/work" linkLabel="View work">
-      <div class="work-preview"><strong>{work[0]?.organization}</strong><span>{work[0]?.role}</span>{work[0]?.status && <em>{work[0].status}</em>}</div>
-    </HomeSection>
-    <HomeSection label="PROJECTS" number="03" description="A selection of things I have built or am building." href="/projects" linkLabel="View projects">
-      <ul class="project-preview">{projects.map((project) => <li><span><strong>{project.title}</strong>{project.role && <small>{project.role}</small>}</span>{project.externalUrl && <a href={project.externalUrl} aria-label={`Open ${project.title}`}>↗</a>}</li>)}</ul>
-    </HomeSection>
-    <HomeSection label="ACADEMIC" number="04" description={academic.degree} href="/academic" linkLabel="View academic">
-      <p class="compact-line">{academic.university}</p>
-    </HomeSection>
-    <HomeSection label="SKILLS" number="05" description="Capabilities shaped by product, software, physics and operations." href="/skills" linkLabel="View skills">
-      <div class="skill-tags">{skills.map((skill, index) => <span class:list-tag-green={index % 2 === 0}>{skill.name}</span>)}</div>
-    </HomeSection>
-    <HomeSection label="ABOUT" number="06" description="The intersection of physics, technology, product and entrepreneurship." href="/about" linkLabel="About me" />
-  </main>
-</BaseLayout>
+
+<LocalizedHome locale="en" profile={profile} nowItems={nowItems} work={work} projects={projects} academic={academic} skills={skills} />

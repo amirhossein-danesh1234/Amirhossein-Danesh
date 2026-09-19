@@ -1,20 +1,22 @@
 ---
-import { profile } from '../data/profile';
+import { profile } from '../data/en/profile';
 import ThemeToggle from './ThemeToggle.astro';
-const { currentPath } = Astro.props;
+import LanguageSwitch from './LanguageSwitch.astro';
+import type { Locale } from '../i18n/config';
+import { messages } from '../i18n/messages';
+import { toLocalizedPath } from '../i18n/paths';
+const { currentPath, locale } = Astro.props as { currentPath: string; locale: Locale };
+const copy = messages[locale];
 const items = [
-  { label: 'Work', href: '/work' },
-  { label: 'Projects', href: '/projects' },
-  { label: 'Academic', href: '/academic' },
-  { label: 'Skills', href: '/skills' },
-  { label: 'About', href: '/about' },
+  { label: copy.nav.work, href: '/work' }, { label: copy.nav.projects, href: '/projects' }, { label: copy.nav.academic, href: '/academic' }, { label: copy.nav.skills, href: '/skills' }, { label: copy.nav.about, href: '/about' },
 ];
 ---
-<nav class="site-nav" aria-label="Primary navigation">
-  <a class="site-nav__brand" href="/">{profile.name}</a>
+<nav class="site-nav" aria-label={locale === 'fa' ? 'ناوبری اصلی' : 'Primary navigation'}>
+  <a class="site-nav__brand" href={toLocalizedPath(locale, '/')}>{profile.name}</a>
   <div class="site-nav__links">
-    {items.map((item) => <a class:list-active={currentPath === item.href} href={item.href}>{item.label}</a>)}
-    <a class="site-nav__resume" class:list-active={currentPath === '/resume'} href="/resume">Resume ↗</a>
-    <ThemeToggle />
+    {items.map((item) => <a class:list-active={currentPath === item.href} href={toLocalizedPath(locale, item.href)}>{item.label}</a>)}
+    <a class="site-nav__resume" class:list-active={currentPath === '/resume'} href={toLocalizedPath(locale, '/resume')}>{copy.nav.resume} {locale === 'fa' ? '↖' : '↗'}</a>
+    <LanguageSwitch locale={locale} currentPath={currentPath} />
+    <ThemeToggle locale={locale} />
   </div>
 </nav>

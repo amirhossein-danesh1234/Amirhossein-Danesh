@@ -1,7 +1,6 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import PageHeader from '../components/PageHeader.astro';
+import LocalizedAbout from '../components/LocalizedAbout.astro';
+import { profile } from '../data/en/profile';
 ---
-<BaseLayout title="About — AmirHossein Danesh" description="About AmirHossein Danesh and the intersection of physics, technology, product and entrepreneurship." currentPath="/about">
-  <main class="content-page"><PageHeader eyebrow="ABOUT" title="A work in progress, across disciplines." description="Physics, technology, product and entrepreneurship are the threads I keep returning to." /><div class="prose"><p>I study physics and work across product, software and technical operations. I am especially interested in the intersection of science, technology, product building and entrepreneurship, with a long-term interest in deep-tech.</p></div></main>
-</BaseLayout>
+
+<LocalizedAbout locale="en" profile={profile} />

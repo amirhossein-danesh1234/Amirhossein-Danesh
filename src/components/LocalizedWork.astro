@@ -1,0 +1,5 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'; import PageHeader from './PageHeader.astro'; import WorkItem from './WorkItem.astro'; import type { Locale } from '../i18n/config'; import type { WorkEntry } from '../data/en/work'; import { messages } from '../i18n/messages';
+type Profile = { name: string }; const { locale, profile, work } = Astro.props as { locale: Locale; profile: Profile; work: WorkEntry[] }; const copy = messages[locale];
+---
+<BaseLayout title={`${copy.nav.work} — ${profile.name}`} description={copy.pages.work.description} currentPath="/work" locale={locale}><main class="content-page"><PageHeader eyebrow={copy.pages.work.eyebrow} title={copy.pages.work.title} description={copy.pages.work.description} /><div class="list">{work.map((entry) => <WorkItem locale={locale} entry={entry} />)}</div></main></BaseLayout>

@@ -1,9 +1,7 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import PageHeader from '../components/PageHeader.astro';
-import { academic } from '../data/academic';
-const sections = [{ label: 'Selected Coursework', items: academic.selectedCoursework }, { label: 'Academic Activities', items: academic.activities }, { label: 'Research Interests', items: academic.researchInterests }, { label: 'Events', items: academic.events }];
+import LocalizedAcademic from '../components/LocalizedAcademic.astro';
+import { profile } from '../data/en/profile';
+import { academic } from '../data/en/academic';
 ---
-<BaseLayout title="Academic — AmirHossein Danesh" description="Academic profile of AmirHossein Danesh." currentPath="/academic">
-  <main class="content-page"><PageHeader eyebrow="ACADEMIC" title={academic.degree} description={academic.university} /><div class="academic-primary"><p class="eyebrow">UNIVERSITY</p><h2>{academic.university}</h2></div>{sections.filter((section) => section.items.length > 0).map((section) => <section class="subsection"><h2>{section.label}</h2><ul>{section.items.map((item) => <li>{item}</li>)}</ul></section>)}</main>
-</BaseLayout>
+
+<LocalizedAcademic locale="en" profile={profile} academic={academic} />

@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProfileHeader from './ProfileHeader.astro';
+import HomeSection from './HomeSection.astro';
+import type { Locale } from '../i18n/config';
+import type { Project } from '../data/en/projects';
+import type { SkillGroup } from '../data/en/skills';
+import type { WorkEntry } from '../data/en/work';
+import { messages } from '../i18n/messages';
+import { toLocalizedPath } from '../i18n/paths';
+type Profile = { name: string; bio: string };
+type NowItem = { label: string; value: string };
+type Academic = { university: string };
+const { locale, profile, nowItems, work, projects, academic, skills } = Astro.props as { locale: Locale; profile: Profile; nowItems: NowItem[]; work: WorkEntry[]; projects: Project[]; academic: Academic; skills: SkillGroup[] };
+const copy = messages[locale as Locale];
+const arrow = locale === 'fa' ? '↖' : '↗';
+---
+<BaseLayout title={profile.name} description={profile.bio} currentPath="/" locale={locale}>
+  <main>
+    <ProfileHeader locale={locale} profile={profile} />
+    <HomeSection locale={locale} label={copy.labels.now} number="01" tone="now" description={copy.home.nowDescription} href={toLocalizedPath(locale, '/about')} linkLabel={copy.actions.moreAbout}>
+      <dl class="now-list">{nowItems.map((item) => <div><dt>{item.label}</dt><dd>{item.value}</dd></div>)}</dl>
+    </HomeSection>
+    <HomeSection locale={locale} label={copy.nav.work} number="02" description={copy.home.workDescription} href={toLocalizedPath(locale, '/work')} linkLabel={copy.actions.viewWork}>
+      <div class="work-preview"><strong>{work[0]?.organization}</strong><span>{work[0]?.role}</span>{work[0]?.status && <em>{work[0].status}</em>}</div>
+    </HomeSection>
+    <HomeSection locale={locale} label={copy.nav.projects} number="03" description={copy.home.projectsDescription} href={toLocalizedPath(locale, '/projects')} linkLabel={copy.actions.viewProjects}>
+      <ul class="project-preview">{projects.map((project) => <li><span><strong>{project.title}</strong>{project.role && <small>{project.role}</small>}</span>{project.externalUrl && <a href={project.externalUrl} aria-label={project.title}>{arrow}</a>}</li>)}</ul>
+    </HomeSection>
+    <HomeSection locale={locale} label={copy.nav.academic} number="04" description={copy.home.academicDescription} href={toLocalizedPath(locale, '/academic')} linkLabel={copy.actions.viewAcademic}><p class="compact-line">{academic.university}</p></HomeSection>
+    <HomeSection locale={locale} label={copy.nav.skills} number="05" description={copy.home.skillsDescription} href={toLocalizedPath(locale, '/skills')} linkLabel={copy.actions.viewSkills}><div class="skill-tags">{skills.map((skill, index) => <span class:list-tag-accent={index % 2 === 0}>{skill.name}</span>)}</div></HomeSection>
+    <HomeSection locale={locale} label={copy.nav.about} number="06" description={copy.home.aboutDescription} href={toLocalizedPath(locale, '/about')} linkLabel={copy.actions.aboutMe} />
+  </main>
+</BaseLayout>
