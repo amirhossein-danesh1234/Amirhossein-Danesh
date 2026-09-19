@@ -1,5 +1,6 @@
 ---
 import { profile } from '../data/profile';
+import ThemeToggle from './ThemeToggle.astro';
 const { currentPath } = Astro.props;
 const items = [
   { label: 'Work', href: '/work' },
@@ -14,5 +15,6 @@ const items = [
   <div class="site-nav__links">
     {items.map((item) => <a class:list-active={currentPath === item.href} href={item.href}>{item.label}</a>)}
     <a class="site-nav__resume" class:list-active={currentPath === '/resume'} href="/resume">Resume ↗</a>
+    <ThemeToggle />
   </div>
 </nav>

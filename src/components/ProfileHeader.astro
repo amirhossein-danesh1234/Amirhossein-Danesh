@@ -2,14 +2,17 @@
 import { profile } from '../data/profile';
 import SocialLinks from './SocialLinks.astro';
 ---
-<header class="profile-header">
-  <img src={profile.profileImage} width="128" height="128" alt={profile.name} class="profile-header__image" />
-  <div class="profile-header__content">
-    <p class="eyebrow">PERSONAL HUB</p>
-    <h1>{profile.name}</h1>
-    <p class="profile-header__title">{profile.title}</p>
-    <p class="profile-header__bio">{profile.bio}</p>
-    {profile.location && <p class="profile-header__location">{profile.location}</p>}
-    <SocialLinks links={profile.socialLinks} />
+<header class="profile-card">
+  <div class="profile-card__band" aria-hidden="true"><span></span></div>
+  <div class="profile-header">
+    <img src={profile.profileImage} width="136" height="136" alt={profile.name} class="profile-header__image" />
+    <div class="profile-header__content">
+      <p class="eyebrow">PERSONAL HUB</p>
+      <h1>{profile.name}</h1>
+      <p class="profile-header__title">{profile.title}</p>
+      <p class="profile-header__bio">{profile.bio}</p>
+      {profile.location && <p class="profile-header__location">{profile.location}</p>}
+      <SocialLinks links={profile.socialLinks} />
+    </div>
   </div>
 </header>

@@ -22,7 +22,7 @@ const schema = jsonLd ?? (currentPath === '/' ? {
 } : undefined);
 ---
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
@@ -36,6 +36,15 @@ const schema = jsonLd ?? (currentPath === '/' ? {
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    <script is:inline>
+      (() => {
+        try {
+          const saved = localStorage.getItem('theme');
+          const system = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          document.documentElement.dataset.theme = saved === 'dark' || saved === 'light' ? saved : system;
+        } catch { document.documentElement.dataset.theme = 'light'; }
+      })();
+    </script>
     {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
     <title>{title}</title>
   </head>
