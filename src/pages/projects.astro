@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import ProjectItem from '../components/ProjectItem.astro';
+import { projects } from '../data/projects';
+---
+<BaseLayout title="Projects — AmirHossein Danesh" description="Projects by AmirHossein Danesh." currentPath="/projects">
+  <main class="content-page"><PageHeader eyebrow="PROJECTS" title="Things I am building and exploring." description="A small, evolving index of projects. More detail can be added as each project develops." /><div class="list">{projects.map((project) => <ProjectItem project={project} />)}</div></main>
+</BaseLayout>

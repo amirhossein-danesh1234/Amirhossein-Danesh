@@ -1,0 +1,10 @@
+---
+import type { Project } from '../data/projects';
+const { project } = Astro.props as { project: Project };
+---
+<article class="list-item project-item">
+  <div class="list-item__heading"><h2>{project.title}</h2>{project.externalUrl && <a href={project.externalUrl} target="_blank" rel="noreferrer" aria-label={`Open ${project.title}`}>↗</a>}</div>
+  {project.role && <p class="muted">{project.role}</p>}
+  {project.description && <p>{project.description}</p>}
+  <div class="metadata">{project.year && <span>{project.year}</span>}{project.status && <span>{project.status}</span>}{project.categories.length > 0 && <span>{project.categories.join(' · ')}</span>}{project.githubUrl && <a href={project.githubUrl} target="_blank" rel="noreferrer">GitHub ↗</a>}</div>
+</article>

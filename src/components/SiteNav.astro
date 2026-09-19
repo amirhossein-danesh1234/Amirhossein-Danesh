@@ -1,0 +1,18 @@
+---
+import { profile } from '../data/profile';
+const { currentPath } = Astro.props;
+const items = [
+  { label: 'Work', href: '/work' },
+  { label: 'Projects', href: '/projects' },
+  { label: 'Academic', href: '/academic' },
+  { label: 'Skills', href: '/skills' },
+  { label: 'About', href: '/about' },
+];
+---
+<nav class="site-nav" aria-label="Primary navigation">
+  <a class="site-nav__brand" href="/">{profile.name}</a>
+  <div class="site-nav__links">
+    {items.map((item) => <a class:list-active={currentPath === item.href} href={item.href}>{item.label}</a>)}
+    <a class="site-nav__resume" class:list-active={currentPath === '/resume'} href="/resume">Resume ↗</a>
+  </div>
+</nav>

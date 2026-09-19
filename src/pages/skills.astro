@@ -1,0 +1,8 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { skills } from '../data/skills';
+---
+<BaseLayout title="Skills — AmirHossein Danesh" description="Skills and capabilities of AmirHossein Danesh." currentPath="/skills">
+  <main class="content-page"><PageHeader eyebrow="SKILLS" title="Capabilities, without a scoreboard." description="Areas of practice that connect product building, technical work, science and operations." /><div class="skill-list">{skills.map((group) => <section class="skill-group"><h2>{group.name}</h2>{group.items.length > 0 ? <ul>{group.items.map((item) => <li>{item}</li>)}</ul> : <p class="muted">To be updated.</p>}</section>)}</div></main>
+</BaseLayout>

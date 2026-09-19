@@ -1,0 +1,9 @@
+---
+import type { WorkEntry } from '../data/work';
+const { entry } = Astro.props as { entry: WorkEntry };
+const period = [entry.startDate, entry.endDate || (entry.startDate ? 'Present' : '')].filter(Boolean).join(' — ');
+---
+<article class="list-item work-item">
+  <div class="list-item__meta">{period || entry.status || 'Current'}</div>
+  <div><div class="list-item__heading"><h2>{entry.organization}</h2>{entry.url && <a href={entry.url} target="_blank" rel="noreferrer">↗</a>}</div><p class="muted">{entry.role}</p>{entry.description && <p>{entry.description}</p>}{entry.responsibilities.length > 0 && <ul>{entry.responsibilities.map((item) => <li>{item}</li>)}</ul>}{entry.relatedProjects.length > 0 && <p class="metadata">Related: {entry.relatedProjects.join(' · ')}</p>}</div>
+</article>

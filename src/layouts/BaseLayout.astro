@@ -1,0 +1,49 @@
+---
+import '../styles/global.css';
+import SiteNav from '../components/SiteNav.astro';
+import { profile } from '../data/profile';
+
+interface Props {
+  title: string;
+  description: string;
+  currentPath?: string;
+  jsonLd?: object;
+}
+
+const { title, description, currentPath = Astro.url.pathname, jsonLd } = Astro.props;
+const canonical = new URL(currentPath, Astro.site ?? 'https://amirhossein-danesh.ir').toString();
+const schema = jsonLd ?? (currentPath === '/' ? {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: profile.name,
+  description: profile.bio,
+  url: 'https://amirhossein-danesh.ir',
+  sameAs: profile.socialLinks.filter((link) => link.external && link.href).map((link) => link.href),
+} : undefined);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
+    <title>{title}</title>
+  </head>
+  <body>
+    <div class="site-shell">
+      <SiteNav currentPath={currentPath} />
+      <slot />
+      <footer class="site-footer"><span>© {new Date().getFullYear()} {profile.name}</span><a href="/resume">Resume ↗</a></footer>
+    </div>
+  </body>
+</html>

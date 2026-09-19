@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProfileHeader from '../components/ProfileHeader.astro';
+import HomeSection from '../components/HomeSection.astro';
+import { nowItems } from '../data/now';
+import { work } from '../data/work';
+import { projects } from '../data/projects';
+import { academic } from '../data/academic';
+import { skills } from '../data/skills';
+import { profile } from '../data/profile';
+---
+<BaseLayout title={profile.name} description={profile.bio} currentPath="/">
+  <main>
+    <ProfileHeader />
+    <HomeSection label="NOW" number="01" description="A short view of what is currently shaping my time." href="/about" linkLabel="More about me">
+      <dl class="now-list">{nowItems.map((item) => <div><dt>{item.label}</dt><dd>{item.value}</dd></div>)}</dl>
+    </HomeSection>
+    <HomeSection label="WORK" number="02" description="Product, startups and technical operations." href="/work" linkLabel="View work">
+      <p class="compact-line">Currently: {work[0]?.organization} — {work[0]?.role}</p>
+    </HomeSection>
+    <HomeSection label="PROJECTS" number="03" description="A selection of things I have built or am building." href="/projects" linkLabel="View projects">
+      <p class="compact-line">{projects.filter((project) => project.featured || project.title).map((project) => project.title).join(' · ')}</p>
+    </HomeSection>
+    <HomeSection label="ACADEMIC" number="04" description={academic.degree} href="/academic" linkLabel="View academic">
+      <p class="compact-line">{academic.university}</p>
+    </HomeSection>
+    <HomeSection label="SKILLS" number="05" description="Capabilities shaped by product, software, physics and operations." href="/skills" linkLabel="View skills">
+      <p class="compact-line">{skills.map((skill) => skill.name).join(' · ')}</p>
+    </HomeSection>
+    <HomeSection label="ABOUT" number="06" description="The intersection of physics, technology, product and entrepreneurship." href="/about" linkLabel="About me" />
+  </main>
+</BaseLayout>
