@@ -3,10 +3,10 @@ import type { Locale } from './config';
 export const messages = {
   en: {
     nav: { work: 'Work', projects: 'Projects', academic: 'Academic', skills: 'Skills', about: 'About', resume: 'Resume', language: 'FA' },
-    labels: { personalHub: 'PERSONAL HUB', now: 'NOW', current: 'Current', studying: 'Studying', building: 'Building', exploring: 'Exploring', theme: 'Theme', switchToDark: 'Switch to dark mode', switchToLight: 'Switch to light mode', switchToPersian: 'Switch to Persian', switchToEnglish: 'Switch to English' },
-    actions: { viewWork: 'View work', viewProjects: 'View projects', viewAcademic: 'View academic', viewSkills: 'View skills', aboutMe: 'About me', moreAbout: 'More about me' },
+    labels: { personalHub: 'PERSONAL SITE', now: 'NOW', experience: 'EXPERIENCE', selectedProjects: 'SELECTED PROJECTS', academicResearch: 'ACADEMIC & RESEARCH', about: 'ABOUT', current: 'Current', studying: 'Studying', building: 'Building', exploring: 'Exploring', theme: 'Theme', switchToDark: 'Switch to dark mode', switchToLight: 'Switch to light mode', switchToPersian: 'Switch to Persian', switchToEnglish: 'Switch to English', contactLinks: 'Contact links', academicEmail: 'Academic email', personalEmail: 'Personal email' },
+    actions: { viewExperience: 'View experience', exploreProjects: 'Explore projects', viewAcademicResearch: 'Academic & research', viewWork: 'View work', viewProjects: 'View projects', viewAcademic: 'View academic', viewSkills: 'View skills', aboutMe: 'More about me', moreAbout: 'More about me' },
     home: {
-      nowDescription: 'A short view of what is currently shaping my time.', workDescription: 'Product, startups and technical operations.', projectsDescription: 'A selection of things I have built or am building.', academicDescription: 'B.Sc. Physics', skillsDescription: 'Capabilities shaped by product, software, physics and operations.', aboutDescription: 'The intersection of physics, technology, product and entrepreneurship.',
+      nowDescription: 'A snapshot of what currently shapes my time and attention.', experienceDescription: 'Selected professional work across product, technical coordination, and startup execution.', projectsDescription: 'A selection of products and projects I have helped shape, build, or take from idea to execution.', academicDescription: 'My academic path combines physics and computer science, with a growing focus on computational and quantum problems.', aboutDescription: 'I’m interested in problems that sit between disciplines. Physics gives me a way to understand complex systems; computer science gives me tools to model and build; product work keeps me close to real problems and real users. Over the long term, I want to bring these worlds together through deep-tech entrepreneurship.', updated: 'Updated September 2026',
     },
     pages: {
       about: { eyebrow: 'ABOUT', title: 'A work in progress, across disciplines.', description: 'Physics, technology, product and entrepreneurship are the threads I keep returning to.' },
@@ -16,15 +16,15 @@ export const messages = {
       skills: { eyebrow: 'SKILLS', title: 'Capabilities, without a scoreboard.', description: 'Areas of practice that connect product building, technical work, science and operations.' },
       resume: { eyebrow: 'RESUME', profile: 'Profile', work: 'Work', projects: 'Projects', academic: 'Academic', areas: 'Areas' },
     },
-    academic: { university: 'University', coursework: 'Selected Coursework', activities: 'Academic Activities', research: 'Research Interests', events: 'Events' },
+    academic: { university: 'University', coursework: 'Selected Coursework', activities: 'Academic Activities', research: 'Research interests', events: 'Events' },
     footer: 'Resume',
   },
   fa: {
     nav: { work: 'کار', projects: 'پروژه‌ها', academic: 'دانشگاه', skills: 'توانمندی‌ها', about: 'درباره من', resume: 'رزومه', language: 'EN' },
-    labels: { personalHub: 'نمایه شخصی', now: 'اکنون', current: 'فعلی', studying: 'در حال مطالعه', building: 'در حال ساخت', exploring: 'در حال بررسی', theme: 'پوسته', switchToDark: 'فعال‌سازی پوسته تاریک', switchToLight: 'فعال‌سازی پوسته روشن', switchToPersian: 'رفتن به فارسی', switchToEnglish: 'رفتن به انگلیسی' },
-    actions: { viewWork: 'مشاهده تجربه کاری', viewProjects: 'مشاهده پروژه‌ها', viewAcademic: 'مشاهده بخش دانشگاه', viewSkills: 'مشاهده توانمندی‌ها', aboutMe: 'درباره من', moreAbout: 'بیشتر درباره من' },
+    labels: { personalHub: 'وب‌سایت شخصی', now: 'اکنون', experience: 'تجربه کاری', selectedProjects: 'پروژه‌های منتخب', academicResearch: 'دانشگاه و پژوهش', about: 'درباره من', current: 'فعلی', studying: 'در حال تحصیل', building: 'در حال ساخت', exploring: 'در حال بررسی و یادگیری', theme: 'پوسته', switchToDark: 'فعال‌سازی پوسته تاریک', switchToLight: 'فعال‌سازی پوسته روشن', switchToPersian: 'رفتن به فارسی', switchToEnglish: 'رفتن به انگلیسی', contactLinks: 'راه‌های ارتباطی', academicEmail: 'ایمیل دانشگاهی', personalEmail: 'ایمیل شخصی' },
+    actions: { viewExperience: 'مشاهده تجربه کاری', exploreProjects: 'مشاهده پروژه‌ها', viewAcademicResearch: 'مسیر دانشگاهی و پژوهشی', viewWork: 'مشاهده تجربه کاری', viewProjects: 'مشاهده پروژه‌ها', viewAcademic: 'مشاهده بخش دانشگاه', viewSkills: 'مشاهده توانمندی‌ها', aboutMe: 'بیشتر درباره من', moreAbout: 'بیشتر درباره من' },
     home: {
-      nowDescription: 'نگاهی کوتاه به چیزهایی که اکنون زمان من را شکل می‌دهند.', workDescription: 'محصول، استارتاپ‌ها و عملیات فنی.', projectsDescription: 'گزیده‌ای از چیزهایی که ساخته‌ام یا در حال ساختنشان هستم.', academicDescription: 'کارشناسی فیزیک', skillsDescription: 'توانمندی‌هایی شکل‌گرفته از محصول، نرم‌افزار، فیزیک و عملیات.', aboutDescription: 'تقاطع فیزیک، فناوری، محصول و کارآفرینی.',
+      nowDescription: 'تصویری کوتاه از چیزهایی که اکنون بیشترین سهم را از زمان و تمرکزم دارند.', experienceDescription: 'گزیده‌ای از تجربه حرفه‌ای من در محصول، هماهنگی فنی و اجرای استارتاپی.', projectsDescription: 'گزیده‌ای از محصول‌ها و پروژه‌هایی که در شکل‌گیری، ساخت یا رساندنشان از ایده به اجرا نقش داشته‌ام.', academicDescription: 'مسیر دانشگاهی من فیزیک و علوم کامپیوتر را با تمرکز رو‌به‌رشد بر مسائل محاسباتی و کوانتومی به هم متصل می‌کند.', aboutDescription: 'به مسئله‌هایی علاقه دارم که دقیقاً در مرز چند حوزه قرار می‌گیرند. فیزیک برایم راهی برای فهم سیستم‌های پیچیده است، علوم کامپیوتر ابزار مدل‌سازی و ساخت را می‌دهد و کار محصول من را به مسئله‌های واقعی و کاربران واقعی نزدیک نگه می‌دارد. در بلندمدت می‌خواهم این مسیرها را در قالب کارآفرینی Deep-Tech به هم متصل کنم.', updated: 'آخرین به‌روزرسانی: مهر ۱۴۰۵',
     },
     pages: {
       about: { eyebrow: 'درباره من', title: 'مسیر کاری در حال شکل‌گیری، میان چند حوزه.', description: 'فیزیک، فناوری، محصول و کارآفرینی رشته‌هایی هستند که همواره به آن‌ها بازمی‌گردم.' },

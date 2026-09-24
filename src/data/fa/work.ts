@@ -1,2 +1,2 @@
 import type { WorkEntry } from '../en/work';
-export const work: WorkEntry[] = [{ organization: 'Baazargaan', role: 'محصول و عملیات', startDate: '', endDate: '', description: '', responsibilities: [], relatedProjects: [], url: '', status: '' }];
+export const work: WorkEntry[] = [{ organization: 'Baazargaan', role: 'هم‌بنیان‌گذار · محصول و نقش فنی', startDate: '', endDate: '', description: 'در حال ساخت یک پلتفرم B2B برای خدمات تجارت خارجی؛ با تمرکز بر تصمیم‌های محصول، هماهنگی فنی و عملیات.', responsibilities: ['محصول', 'هماهنگی فنی', 'عملیات استارتاپی'], relatedProjects: [], url: '', status: 'فعال' }];

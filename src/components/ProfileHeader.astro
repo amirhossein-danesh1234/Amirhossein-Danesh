@@ -16,7 +16,7 @@ const copy = messages[locale];
       <p class="profile-header__title">{profile.title}</p>
       <p class="profile-header__bio">{profile.bio}</p>
       {profile.location && <p class="profile-header__location">{profile.location}</p>}
-      <SocialLinks locale={locale} links={profile.socialLinks} />
+      <SocialLinks locale={locale} links={profile.socialLinks} emails={profile.emails} />
     </div>
   </div>
 </header>

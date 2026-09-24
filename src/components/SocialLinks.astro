@@ -1,8 +1,34 @@
 ---
-import type { SocialLink } from '../data/en/profile';
+import type { EmailContact, SocialLink } from '../data/en/profile';
 import type { Locale } from '../i18n/config';
-const { links, locale } = Astro.props as { links: readonly SocialLink[]; locale: Locale };
+import { messages } from '../i18n/messages';
+import SocialIcon from './SocialIcon.astro';
+
+const { links, emails, locale } = Astro.props as { links: readonly SocialLink[]; emails: readonly EmailContact[]; locale: Locale };
+const copy = messages[locale].labels;
 ---
-<div class="social-links" aria-label="External links">
-  {links.filter((link) => link.href).map((link) => <a class="social-link" href={link.href} target={link.external ? '_blank' : undefined} rel={link.external ? 'noreferrer' : undefined}>{link.label}{link.external ? (locale === 'fa' ? ' ↖' : ' ↗') : ''}</a>)}
+<div class="social-links" role="group" aria-label={copy.contactLinks}>
+  {links.map((link) => link.icon === 'email' ? (
+    <details class="social-email">
+      <summary class="social-link social-email__trigger" aria-label={link.label}>
+        <SocialIcon name="email" />
+        <span class="sr-only">{link.label}</span>
+      </summary>
+      <ul class="social-email__panel">
+        {emails.map((email) => (
+          <li>
+            <a href={`mailto:${email.address}`}>
+              <span class="social-email__type">{email.type === 'academic' ? copy.academicEmail : copy.personalEmail}</span>
+              <span class="social-email__address" dir="ltr">{email.address}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </details>
+  ) : link.href ? (
+    <a class="social-link" href={link.href} aria-label={link.label} target={link.external ? '_blank' : undefined} rel={link.external ? 'noreferrer' : undefined}>
+      <SocialIcon name={link.icon} />
+      <span class="sr-only">{link.label}</span>
+    </a>
+  ) : null)}
 </div>

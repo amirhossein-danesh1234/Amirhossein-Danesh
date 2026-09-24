@@ -5,6 +5,7 @@ import LanguageSwitch from './LanguageSwitch.astro';
 import type { Locale } from '../i18n/config';
 import { messages } from '../i18n/messages';
 import { toLocalizedPath } from '../i18n/paths';
+import SocialIcon from './SocialIcon.astro';
 const { currentPath, locale } = Astro.props as { currentPath: string; locale: Locale };
 const copy = messages[locale];
 const items = [
@@ -13,9 +14,16 @@ const items = [
 ---
 <nav class="site-nav" aria-label={locale === 'fa' ? 'ناوبری اصلی' : 'Primary navigation'}>
   <a class="site-nav__brand" href={toLocalizedPath(locale, '/')}>{profile.name}</a>
-  <div class="site-nav__links">
-    {items.map((item) => <a class:list-active={currentPath === item.href} href={toLocalizedPath(locale, item.href)}>{item.label}</a>)}
-    <a class="site-nav__resume" class:list-active={currentPath === '/resume'} href={toLocalizedPath(locale, '/resume')}>{copy.nav.resume} {locale === 'fa' ? '↖' : '↗'}</a>
+  <div class="site-nav__center">
+    <div class="site-nav__links">
+      {items.map((item) => <a class:list-active={currentPath === item.href} href={toLocalizedPath(locale, item.href)}>{item.label}</a>)}
+    </div>
+  </div>
+  <div class="site-nav__actions">
+    <a class="site-nav__icon-link" class:list-active={currentPath === '/resume'} href={toLocalizedPath(locale, '/resume')} aria-label={copy.nav.resume}>
+      <SocialIcon name="resume" />
+      <span class="sr-only">{copy.nav.resume}</span>
+    </a>
     <LanguageSwitch locale={locale} currentPath={currentPath} />
     <ThemeToggle locale={locale} />
   </div>

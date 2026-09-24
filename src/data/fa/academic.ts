@@ -1,1 +1,1 @@
-export const academic = { university: 'دانشگاه صنعتی امیرکبیر', degree: 'کارشناسی فیزیک', selectedCoursework: [] as string[], activities: [] as string[], researchInterests: [] as string[], events: [] as string[] };
+export const academic = { university: 'دانشگاه صنعتی امیرکبیر', degree: 'کارشناسی فیزیک', minor: 'ماینور علوم کامپیوتر', selectedCoursework: [] as string[], activities: [] as string[], researchInterests: ['محاسبات کوانتومی', 'الگوریتم‌های کوانتومی', 'شبیه‌سازی کوانتومی', 'هوش مصنوعی'], events: [] as string[] };
