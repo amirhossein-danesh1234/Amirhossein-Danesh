@@ -1,10 +1,17 @@
 ---
 import { profile as defaultProfile } from '../data/en/profile';
 import SocialLinks from './SocialLinks.astro';
+import KeyPhraseText from './KeyPhraseText.astro';
 import type { Locale } from '../i18n/config';
 import { messages } from '../i18n/messages';
 const { locale, profile = defaultProfile } = Astro.props as { locale: Locale; profile?: typeof defaultProfile };
 const copy = messages[locale];
+const redPhrases = locale === 'fa'
+  ? ['دانشجوی فیزیک و علوم کامپیوتر', 'ماینور علوم کامپیوتر']
+  : ['Physics & Computer Science Student', 'minor in computer science'];
+const greenPhrases = locale === 'fa'
+  ? ['محصول و عملیات فنی', 'هماهنگی فنی', 'محصول‌های واقعی', 'محصولات فناوری عمیق']
+  : ['Product & Technical Operations', 'technical coordination', 'useful products', 'deep-tech products'];
 ---
 <header class="profile-card">
   <div class="profile-card__band" aria-hidden="true"><span></span></div>
@@ -13,8 +20,8 @@ const copy = messages[locale];
     <div class="profile-header__content">
       <p class="eyebrow">{copy.labels.personalHub}</p>
       <h1>{profile.name}</h1>
-      <p class="profile-header__title">{profile.title}</p>
-      <p class="profile-header__bio">{profile.bio}</p>
+      <p class="profile-header__title"><KeyPhraseText text={profile.title} phrases={redPhrases} greenPhrases={greenPhrases} /></p>
+      <p class="profile-header__bio"><KeyPhraseText text={profile.bio} phrases={redPhrases} greenPhrases={greenPhrases} /></p>
       {profile.location && <p class="profile-header__location">{profile.location}</p>}
       <SocialLinks locale={locale} links={profile.socialLinks} emails={profile.emails} />
     </div>

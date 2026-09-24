@@ -1,0 +1,27 @@
+---
+interface Props {
+  text: string;
+  phrases?: string[];
+  greenPhrases?: string[];
+}
+
+const { text, phrases = [], greenPhrases = [] } = Astro.props;
+const toneByPhrase = new Map([
+  ...phrases.map((phrase) => [phrase.toLocaleLowerCase(), 'red'] as const),
+  ...greenPhrases.map((phrase) => [phrase.toLocaleLowerCase(), 'green'] as const),
+]);
+const allPhrases = [...phrases, ...greenPhrases];
+const phrasePattern = allPhrases
+  .filter(Boolean)
+  .sort((left, right) => right.length - left.length)
+  .map((phrase) => phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+  .join('|');
+const parts = phrasePattern ? text.split(new RegExp(`(${phrasePattern})`, 'giu')) : [text];
+---
+
+{parts.map((part) => {
+  const tone = toneByPhrase.get(part.toLocaleLowerCase());
+  return tone
+    ? <span class:list={['key-phrase', tone === 'green' && 'key-phrase--green']}>{part}</span>
+    : part;
+})}

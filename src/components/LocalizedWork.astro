@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import type { Locale } from '../i18n/config';
 import type { WorkCaseStudy } from '../data/en/work';
+import KeyPhraseText from './KeyPhraseText.astro';
 
 const { locale, profile, caseStudy } = Astro.props as {
   locale: Locale;
@@ -9,20 +10,26 @@ const { locale, profile, caseStudy } = Astro.props as {
   caseStudy: WorkCaseStudy;
 };
 const workflowLine = locale === 'fa' ? 'ادامهٔ روند' : 'Next step';
+const redWorkPhrases = locale === 'fa'
+  ? ['تصمیم‌های محصول', 'مسئله را روشن می‌کنم', 'بررسی کیفیت']
+  : ['product decisions', 'product questions', 'problem definition', 'quality assurance'];
+const greenWorkPhrases = locale === 'fa'
+  ? ['بازرگان', 'محصول و فناوری', 'هماهنگی فنی', 'مستندسازی', 'کارهای قابل اجرا', 'همکاران متخصص', 'همکاری تیم']
+  : ['Baazargaan', 'Product & Technical', 'technical coordination', 'documentation', 'actionable requirements', 'specialists', 'collaborative'];
 ---
 
 <BaseLayout title={`${caseStudy.projectName} — ${profile.name}`} description={caseStudy.introduction} currentPath="/work" locale={locale}>
   <main class="content-page work-case-study">
     <header class="work-hero">
       <p class="eyebrow">{locale === 'fa' ? 'تجربهٔ کاری' : 'Experience'}</p>
-      <h1>{caseStudy.projectName}</h1>
-      <p class="work-hero__role">{caseStudy.role}</p>
-      <p class="work-hero__introduction">{caseStudy.introduction}</p>
+      <h1><KeyPhraseText text={caseStudy.projectName} greenPhrases={greenWorkPhrases} /></h1>
+      <p class="work-hero__role"><KeyPhraseText text={caseStudy.role} phrases={redWorkPhrases} greenPhrases={greenWorkPhrases} /></p>
+      <p class="work-hero__introduction"><KeyPhraseText text={caseStudy.introduction} phrases={redWorkPhrases} greenPhrases={greenWorkPhrases} /></p>
     </header>
 
     <section class="case-section" aria-labelledby="case-role-title">
       <h2 id="case-role-title">{caseStudy.sections.myRole}</h2>
-      <div class="case-section__content"><p class="case-lead">{caseStudy.roleSummary}</p></div>
+      <div class="case-section__content"><p class="case-lead"><KeyPhraseText text={caseStudy.roleSummary} phrases={redWorkPhrases} greenPhrases={greenWorkPhrases} /></p></div>
     </section>
 
     <section class="case-section" aria-labelledby="case-work-title">
@@ -38,7 +45,7 @@ const workflowLine = locale === 'fa' ? 'ادامهٔ روند' : 'Next step';
     <section class="case-section" aria-labelledby="case-team-title">
       <h2 id="case-team-title">{caseStudy.sections.workingWithTeam}</h2>
       <div class="case-section__content">
-        <p class="case-lead">{caseStudy.team.description}</p>
+        <p class="case-lead"><KeyPhraseText text={caseStudy.team.description} phrases={redWorkPhrases} greenPhrases={greenWorkPhrases} /></p>
         <ul class="case-collaborators">{caseStudy.team.collaborators.map((person) => <li>{person}</li>)}</ul>
       </div>
     </section>

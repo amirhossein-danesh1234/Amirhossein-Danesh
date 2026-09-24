@@ -1,10 +1,11 @@
 ---
 import type { Locale } from '../i18n/config';
-interface Props { label: string; number: string; description: string; href?: string; linkLabel?: string; tone?: string; locale: Locale; }
-const { label, number, description, href, linkLabel, tone = 'default', locale } = Astro.props;
+import KeyPhraseText from './KeyPhraseText.astro';
+interface Props { label: string; number: string; description: string; href?: string; linkLabel?: string; tone?: string; locale: Locale; redPhrases?: string[]; greenPhrases?: string[]; }
+const { label, number, description, href, linkLabel, tone = 'default', locale, redPhrases = [], greenPhrases = [] } = Astro.props;
 const arrow = locale === 'fa' ? '←' : '→';
 ---
 <section class:list={["home-section", `home-section--${tone}`]}>
   <div class="home-section__header"><div class="section-label"><i aria-hidden="true"></i>{label}</div><span class="section-number">{number}</span></div>
-  <div class="home-section__body"><div><p class="home-section__description">{description}</p><slot /></div>{href && linkLabel && <a class="text-link" href={href}>{linkLabel} {arrow}</a>}</div>
+  <div class="home-section__body"><div><p class="home-section__description"><KeyPhraseText text={description} phrases={redPhrases} greenPhrases={greenPhrases} /></p><slot /></div>{href && linkLabel && <a class="text-link" href={href}>{linkLabel} {arrow}</a>}</div>
 </section>

@@ -20,6 +20,8 @@
   --color-border: #ded9d0;
   --color-border-strong: #cbc4b8;
   --color-now-ink: #08090a;
+  --color-key-phrase: #861d2d;
+  --color-key-phrase-green: #1b6846;
   --shadow-profile: 0 6px 22px rgba(23, 50, 77, 0.07);
   --font-latin: "Century Schoolbook", Georgia, "Times New Roman", serif;
   --font-persian: "Calibri", "Vazirmatn Variable", "Vazirmatn", Tahoma, sans-serif;
@@ -49,11 +51,15 @@
   --color-border: rgba(255, 255, 255, 0.075);
   --color-border-strong: rgba(255, 255, 255, 0.13);
   --color-now-ink: #f1eae4;
+  --color-key-phrase: #e8a1a7;
+  --color-key-phrase-green: #a4d8b4;
   --shadow-profile: 0 6px 22px rgba(0, 0, 0, 0.28);
 }
 
 html[lang="en"] { font-family: var(--font-latin); }
 html[lang="fa"] { font-family: var(--font-persian); }
+.key-phrase { color: var(--color-key-phrase); font-weight: 650; transition: color 360ms cubic-bezier(.2, .7, .2, 1); }
+.key-phrase--green { color: var(--color-key-phrase-green); font-weight: 650; transition: color 360ms cubic-bezier(.2, .7, .2, 1); }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; background: var(--color-canvas); }
 body { min-width: 320px; margin: 0; background: var(--color-canvas); color: var(--color-text); font-size: 16px; line-height: 1.65; transition: background-color .18s ease, color .18s ease; }
@@ -79,6 +85,7 @@ button { font: inherit; }
 .site-nav__icon-link.list-active { color: var(--color-primary-strong); }
 .site-nav__icon-link svg { display: block; width: 18px; height: 18px; }
 .language-switch { color: var(--color-primary); font-weight: 700; }
+.language-switch[lang="fa"] { font-family: var(--font-persian); }
 .theme-toggle svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .theme-toggle__moon { display: none; }
 :root[data-theme="dark"] .theme-toggle__sun { display: none; }
@@ -327,6 +334,8 @@ main { padding-block-end: 30px; }
   color: var(--color-now-ink) !important;
   transition: color 360ms cubic-bezier(.2, .7, .2, 1);
 }
+.home-section--now .key-phrase { color: var(--color-key-phrase) !important; }
+.home-section--now .key-phrase--green { color: var(--color-key-phrase-green) !important; }
 .now-list dt { font-weight: 500; }
 .now-list div { border-block-end-color: var(--color-border); }
 .project-preview li { padding-block: 18px; border-block-end-color: var(--color-border); }

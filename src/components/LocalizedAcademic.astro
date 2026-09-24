@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHeader from './PageHeader.astro';
+import KeyPhraseText from './KeyPhraseText.astro';
 import type { Locale } from '../i18n/config';
 import { messages } from '../i18n/messages';
 
@@ -30,11 +31,13 @@ type Academic = {
 
 const { locale, profile, academic } = Astro.props as { locale: Locale; profile: Profile; academic: Academic };
 const copy = messages[locale];
+const academicPhrases = locale === 'fa' ? ['فیزیک و علوم کامپیوتر'] : ['physics and computer science'];
+const secondaryPhrases = locale === 'fa' ? ['مدارس استعدادهای درخشان'] : ['selective secondary-school system'];
 ---
 
 <BaseLayout title={`${copy.nav.academic} — ${profile.name}`} description={academic.educationIntro} currentPath="/academic" locale={locale}>
   <main class="content-page academic-page">
-    <PageHeader eyebrow={copy.labels.academicResearch} title={academic.educationTitle} description={academic.educationIntro} />
+    <PageHeader eyebrow={copy.labels.academicResearch} title={academic.educationTitle} description={academic.educationIntro} redPhrases={academicPhrases} greenPhrases={secondaryPhrases} />
 
     <section class="education-timeline" aria-label={academic.educationTitle}>
       <article class="education-entry education-entry--university">
@@ -43,13 +46,13 @@ const copy = messages[locale];
           <header class="education-entry__heading">
             <div>
               <p class="education-entry__period">{academic.universityPeriod}</p>
-              <h2>{academic.university}</h2>
+              <h2><span class="key-phrase">{academic.university}</span></h2>
             </div>
             <span class="education-entry__marker" aria-hidden="true"></span>
           </header>
-          <h3>{academic.degree}</h3>
-          <p class="education-entry__minor">{academic.minor}</p>
-          <p class="education-entry__description">{academic.universityDescription}</p>
+          <h3 class="key-phrase">{academic.degree}</h3>
+          <p class="education-entry__minor key-phrase">{academic.minor}</p>
+          <p class="education-entry__description"><KeyPhraseText text={academic.universityDescription} phrases={academicPhrases} greenPhrases={locale === 'fa' ? ['محاسبات، الگوریتم‌ها'] : ['computation, algorithms']} /></p>
           <ul class="education-tags" aria-label={locale === 'fa' ? 'حوزه‌های تحصیل' : 'Fields of study'}>
             {academic.universityTags.map((tag) => <li>{tag}</li>)}
           </ul>

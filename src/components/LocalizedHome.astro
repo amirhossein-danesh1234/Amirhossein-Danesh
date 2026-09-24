@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProfileHeader from './ProfileHeader.astro';
 import HomeSection from './HomeSection.astro';
+import KeyPhraseText from './KeyPhraseText.astro';
 import type { Locale } from '../i18n/config';
 import type { Project } from '../data/en/projects';
 import type { WorkEntry } from '../data/en/work';
@@ -20,16 +21,16 @@ const experience = work[0];
   <main>
     <ProfileHeader locale={locale} profile={profile} />
     <HomeSection locale={locale} label={copy.labels.now} number="01" tone="now" description={copy.home.nowDescription}>
-      <dl class="now-list">{nowItems.map((item) => <div><dt>{item.label}</dt><dd><strong>{item.value}</strong>{item.detail && <small>{item.detail}</small>}</dd></div>)}</dl>
+      <dl class="now-list">{nowItems.map((item, index) => <div><dt>{item.label}</dt><dd><strong><KeyPhraseText text={item.value} phrases={index === 0 ? (locale === 'fa' ? ['کارشناسی فیزیک', 'ماینور علوم کامپیوتر'] : ['B.Sc. in Physics', 'Computer Science Minor']) : []} greenPhrases={index === 1 ? ['بازرگان', 'Baazargaan'] : []} /></strong>{item.detail && <small><KeyPhraseText text={item.detail} greenPhrases={index === 1 ? (locale === 'fa' ? ['محصول و نقش فنی'] : ['Product & Technical']) : []} /></small>}</dd></div>)}</dl>
       <p class="home-updated">{copy.home.updated}</p>
     </HomeSection>
-    <HomeSection locale={locale} label={copy.labels.experience} number="02" description={copy.home.experienceDescription} href={toLocalizedPath(locale, '/work')} linkLabel={copy.actions.viewExperience}>
-      {experience && <article class="experience-preview"><header><div><h3>{experience.organization}</h3><p>{experience.role}</p></div><em>{experience.status}</em></header><p class="experience-preview__description">{experience.description}</p><ul class="tag-list">{experience.responsibilities.map((item) => <li>{item}</li>)}</ul></article>}
+    <HomeSection locale={locale} label={copy.labels.experience} number="02" description={copy.home.experienceDescription} greenPhrases={locale === 'fa' ? ['محصول', 'هماهنگی فنی'] : ['product', 'technical coordination']} href={toLocalizedPath(locale, '/work')} linkLabel={copy.actions.viewExperience}>
+      {experience && <article class="experience-preview"><header><div><h3 class="key-phrase--green">{experience.organization}</h3><p><KeyPhraseText text={experience.role} greenPhrases={locale === 'fa' ? ['محصول و فناوری'] : ['Product & Technical']} /></p></div><em>{experience.status}</em></header><p class="experience-preview__description"><KeyPhraseText text={experience.description} greenPhrases={locale === 'fa' ? ['هماهنگی فنی', 'اجرا'] : ['product, technology, and delivery']} /></p><ul class="tag-list">{experience.responsibilities.map((item) => <li>{item}</li>)}</ul></article>}
     </HomeSection>
-    <HomeSection locale={locale} label={copy.labels.selectedProjects} number="03" description={copy.home.projectsDescription} href={toLocalizedPath(locale, '/projects')} linkLabel={copy.actions.exploreProjects}>
-      <ul class="project-preview">{selectedProjects.map((project) => <li><header><strong>{project.title}</strong>{project.status && <em>{project.status}</em>}</header><p>{project.description}</p>{project.role && <small>{project.role}</small>}{project.externalUrl && <a href={project.externalUrl} aria-label={project.title}>{arrow}</a>}</li>)}</ul>
+    <HomeSection locale={locale} label={copy.labels.selectedProjects} number="03" description={copy.home.projectsDescription} greenPhrases={locale === 'fa' ? ['ایده به اجرا'] : ['shape, build', 'toward something people can use']} href={toLocalizedPath(locale, '/projects')} linkLabel={copy.actions.exploreProjects}>
+      <ul class="project-preview">{selectedProjects.map((project) => <li><header><strong class:list={['key-phrase', ['physics-workspace', 'personal-ai-agent'].includes(project.slug) ? '' : 'key-phrase--green']}>{project.title}</strong>{project.status && <em>{project.status}</em>}</header><p><KeyPhraseText text={project.description} greenPhrases={locale === 'fa' ? ['ایده به اجرا', 'طراحی و توسعه'] : ['shape, build', 'from an early idea']} /></p>{project.role && <small>{project.role}</small>}{project.externalUrl && <a href={project.externalUrl} aria-label={project.title}>{arrow}</a>}</li>)}</ul>
     </HomeSection>
-    <HomeSection locale={locale} label={copy.labels.academicResearch} number="04" description={copy.home.academicDescription} href={toLocalizedPath(locale, '/academic')} linkLabel={copy.actions.viewAcademicResearch}><div class="academic-preview"><strong>{academic.university}</strong><p>{academic.degree} · {academic.minor}</p><h3>{copy.academic.research}</h3><p>{academic.researchInterests.join(' · ')}</p></div></HomeSection>
-    <HomeSection locale={locale} label={copy.labels.about} number="05" description={copy.home.aboutDescription} href={toLocalizedPath(locale, '/about')} linkLabel={copy.actions.aboutMe} />
+    <HomeSection locale={locale} label={copy.labels.academicResearch} number="04" description={copy.home.academicDescription} redPhrases={locale === 'fa' ? ['فیزیک و علوم کامپیوتر', 'محاسباتی و کوانتومی'] : ['physics', 'computer science', 'computational and quantum']} href={toLocalizedPath(locale, '/academic')} linkLabel={copy.actions.viewAcademicResearch}><div class="academic-preview"><strong class="key-phrase">{academic.university}</strong><p><KeyPhraseText text={`${academic.degree} · ${academic.minor}`} phrases={locale === 'fa' ? ['فیزیک', 'علوم کامپیوتر'] : ['Physics', 'Computer Science']} /></p><h3>{copy.academic.research}</h3><p><KeyPhraseText text={academic.researchInterests.join(' · ')} phrases={locale === 'fa' ? ['محاسبات کوانتومی', 'الگوریتم‌های کوانتومی'] : ['quantum computing', 'quantum algorithms']} /></p></div></HomeSection>
+    <HomeSection locale={locale} label={copy.labels.about} number="05" description={copy.home.aboutDescription} redPhrases={locale === 'fa' ? ['فیزیک', 'علوم کامپیوتر'] : ['Physics', 'computer science']} greenPhrases={locale === 'fa' ? ['کار محصول', 'محصولات فناوری عمیق'] : ['product work', 'deep-tech products']} href={toLocalizedPath(locale, '/about')} linkLabel={copy.actions.aboutMe} />
   </main>
 </BaseLayout>

@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHeader from './PageHeader.astro';
+import KeyPhraseText from './KeyPhraseText.astro';
 import type { Locale } from '../i18n/config';
 import type { Capability, DevelopingArea, SkillToolGroup } from '../data/en/skills';
 import { messages } from '../i18n/messages';
@@ -19,14 +20,14 @@ const arrow = locale === 'fa' ? '←' : '→';
 
 <BaseLayout title={`${copy.nav.skills} — ${profile.name}`} description={copy.pages.skills.description} currentPath="/skills" locale={locale}>
   <main class="content-page capabilities-page">
-    <PageHeader eyebrow={copy.pages.skills.eyebrow} title={copy.pages.skills.title} description={copy.pages.skills.description} />
+    <PageHeader eyebrow={copy.pages.skills.eyebrow} title={copy.pages.skills.title} description={copy.pages.skills.description} redPhrases={locale === 'fa' ? ['توانمندی‌ها'] : ['Capabilities']} greenPhrases={locale === 'fa' ? ['مسئولیت‌هایی که می‌توانم بپذیرم', 'با دیگران همکاری می‌کنم'] : ['responsibilities I can take on', 'collaborate to move work forward']} />
 
     <section class="capabilities-list" aria-label={copy.pages.skills.capabilities}>
       {capabilities.map((capability) => (
         <article class:list={['capability', capability.featured && 'capability--featured', capability.compact && 'capability--compact']}>
           <div class="capability__main">
-            <h2>{capability.title}</h2>
-            <p class="capability__summary">{capability.summary}</p>
+            <h2 class:list={['key-phrase', !capability.title.toLowerCase().includes(locale === 'fa' ? 'تحلیلی' : 'analytical') && 'key-phrase--green']}>{capability.title}</h2>
+            <p class="capability__summary"><KeyPhraseText text={capability.summary} phrases={locale === 'fa' ? ['فیزیک'] : ['physics']} greenPhrases={locale === 'fa' ? ['تصمیم‌های روشن‌تر محصول', 'محصول و توسعه', 'افراد، زمینه و تصمیم‌ها'] : ['clearer product decisions', 'product and software development', 'people, context, and decisions']} /></p>
             <ul class="capability__items">
               {capability.items.map((item) => <li>{item}</li>)}
             </ul>

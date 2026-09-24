@@ -2,7 +2,7 @@ import type { Locale } from './config';
 
 export const messages = {
   en: {
-    nav: { work: 'Work', projects: 'Projects', academic: 'Academic', skills: 'Skills', about: 'About', resume: 'Resume', language: 'FA' },
+    nav: { work: 'Work', projects: 'Projects', academic: 'Academic', skills: 'Skills', about: 'About', resume: 'Resume', language: 'فا' },
     labels: { personalHub: 'PERSONAL SITE', now: 'NOW', experience: 'EXPERIENCE', selectedProjects: 'SELECTED PROJECTS', academicResearch: 'ACADEMIC & RESEARCH', about: 'ABOUT', current: 'Current', studying: 'Studying', building: 'Building', exploring: 'Exploring', theme: 'Theme', switchToDark: 'Switch to dark mode', switchToLight: 'Switch to light mode', switchToPersian: 'Switch to Persian', switchToEnglish: 'Switch to English', contactLinks: 'Contact links', academicEmail: 'Academic email', personalEmail: 'Personal email' },
     actions: { viewExperience: 'View experience', exploreProjects: 'Explore projects', viewAcademicResearch: 'Academic & research', viewWork: 'View work', viewProjects: 'View projects', viewAcademic: 'View academic', viewSkills: 'View skills', aboutMe: 'More about me', moreAbout: 'More about me' },
     home: {
@@ -20,7 +20,7 @@ export const messages = {
     footer: 'Resume',
   },
   fa: {
-    nav: { work: 'کار', projects: 'پروژه‌ها', academic: 'دانشگاه و پژوهش', skills: 'توانمندی‌ها', about: 'درباره من', resume: 'رزومه', language: 'انگلیسی' },
+    nav: { work: 'کار', projects: 'پروژه‌ها', academic: 'دانشگاه و پژوهش', skills: 'توانمندی‌ها', about: 'درباره من', resume: 'رزومه', language: 'EN' },
     labels: { personalHub: 'وب‌سایت شخصی', now: 'اکنون', experience: 'تجربه کاری', selectedProjects: 'پروژه‌های منتخب', academicResearch: 'دانشگاه و پژوهش', about: 'درباره من', current: 'فعلی', studying: 'در حال تحصیل', building: 'در حال ساخت', exploring: 'در حال بررسی و یادگیری', theme: 'پوسته', switchToDark: 'فعال‌سازی پوسته تاریک', switchToLight: 'فعال‌سازی پوسته روشن', switchToPersian: 'رفتن به فارسی', switchToEnglish: 'رفتن به انگلیسی', contactLinks: 'راه‌های ارتباطی', academicEmail: 'ایمیل دانشگاهی', personalEmail: 'ایمیل شخصی' },
     actions: { viewExperience: 'مرور تجربه‌ام در کار', exploreProjects: 'مرور پروژه‌ها', viewAcademicResearch: 'نگاهی به مسیر دانشگاهی‌ام', viewWork: 'مرور تجربه کاری', viewProjects: 'دیدن پروژه‌ها', viewAcademic: 'رفتن به مسیر دانشگاهی', viewSkills: 'مرور توانمندی‌ها', aboutMe: 'کمی بیشتر درباره من', moreAbout: 'کمی بیشتر درباره من' },
     home: {

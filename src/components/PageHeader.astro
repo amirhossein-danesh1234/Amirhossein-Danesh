@@ -1,5 +1,14 @@
 ---
-interface Props { eyebrow: string; title: string; description: string; }
-const { eyebrow, title, description } = Astro.props;
+import KeyPhraseText from './KeyPhraseText.astro';
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  description: string;
+  redPhrases?: string[];
+  greenPhrases?: string[];
+}
+
+const { eyebrow, title, description, redPhrases = [], greenPhrases = [] } = Astro.props;
 ---
-<header class="page-header"><p class="eyebrow">{eyebrow}</p><h1>{title}</h1><p>{description}</p></header>
+<header class="page-header"><p class="eyebrow">{eyebrow}</p><h1><KeyPhraseText text={title} phrases={redPhrases} greenPhrases={greenPhrases} /></h1><p><KeyPhraseText text={description} phrases={redPhrases} greenPhrases={greenPhrases} /></p></header>

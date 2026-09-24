@@ -1,5 +1,7 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro'; import PageHeader from './PageHeader.astro'; import type { Locale } from '../i18n/config'; import { messages } from '../i18n/messages';
+import BaseLayout from '../layouts/BaseLayout.astro'; import PageHeader from './PageHeader.astro'; import KeyPhraseText from './KeyPhraseText.astro'; import type { Locale } from '../i18n/config'; import { messages } from '../i18n/messages';
 type Profile = { name: string; bio: string }; const { locale, profile } = Astro.props as { locale: Locale; profile: Profile }; const copy = messages[locale];
+const redPhrases = locale === 'fa' ? ['ماینور علوم کامپیوتر'] : ['minor in computer science'];
+const greenPhrases = locale === 'fa' ? ['محصول‌های واقعی', 'محصولات فناوری عمیق'] : ['useful products', 'deep-tech products'];
 ---
-<BaseLayout title={`${copy.nav.about} — ${profile.name}`} description={copy.pages.about.description} currentPath="/about" locale={locale}><main class="content-page"><PageHeader eyebrow={copy.pages.about.eyebrow} title={copy.pages.about.title} description={copy.pages.about.description} /><div class="prose"><p>{profile.bio}</p></div></main></BaseLayout>
+<BaseLayout title={`${copy.nav.about} — ${profile.name}`} description={copy.pages.about.description} currentPath="/about" locale={locale}><main class="content-page"><PageHeader eyebrow={copy.pages.about.eyebrow} title={copy.pages.about.title} description={copy.pages.about.description} redPhrases={locale === 'fa' ? ['فیزیک'] : ['Physics']} greenPhrases={locale === 'fa' ? ['کارآفرینی'] : ['entrepreneurship']} /><div class="prose"><p><KeyPhraseText text={profile.bio} phrases={redPhrases} greenPhrases={greenPhrases} /></p></div></main></BaseLayout>
