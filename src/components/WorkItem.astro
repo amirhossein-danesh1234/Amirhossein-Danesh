@@ -5,9 +5,9 @@ import { messages } from '../i18n/messages';
 const { entry, locale } = Astro.props as { entry: WorkEntry; locale: Locale };
 const copy = messages[locale];
 const arrow = locale === 'fa' ? '↖' : '↗';
-const period = [entry.startDate, entry.endDate || (entry.startDate ? 'Present' : '')].filter(Boolean).join(' — ');
+const period = [entry.startDate, entry.endDate || (entry.startDate ? (locale === 'fa' ? 'اکنون' : 'Present') : '')].filter(Boolean).join(' — ');
 ---
 <article class="list-item work-item">
   <div class="list-item__meta">{period || entry.status || copy.labels.current}</div>
-  <div><div class="list-item__heading"><h2>{entry.organization}</h2>{entry.url && <a href={entry.url} target="_blank" rel="noreferrer">{arrow}</a>}</div><p class="muted">{entry.role}</p>{entry.description && <p>{entry.description}</p>}{entry.responsibilities.length > 0 && <ul>{entry.responsibilities.map((item) => <li>{item}</li>)}</ul>}{entry.relatedProjects.length > 0 && <p class="metadata">Related: {entry.relatedProjects.join(' · ')}</p>}</div>
+  <div><div class="list-item__heading"><h2>{entry.organization}</h2>{entry.url && <a href={entry.url} target="_blank" rel="noreferrer">{arrow}</a>}</div><p class="muted">{entry.role}</p>{entry.description && <p>{entry.description}</p>}{entry.responsibilities.length > 0 && <ul>{entry.responsibilities.map((item) => <li>{item}</li>)}</ul>}{entry.relatedProjects.length > 0 && <p class="metadata">{locale === 'fa' ? 'پروژه‌های مرتبط:' : 'Related:'} {entry.relatedProjects.join(' · ')}</p>}</div>
 </article>

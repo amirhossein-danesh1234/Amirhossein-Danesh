@@ -5,7 +5,7 @@ export type EmailContact = { type: 'academic' | 'personal'; address: string };
 export const profile = {
   name: 'AmirHossein Danesh',
   title: 'Physics & Computer Science Student · Product & Technical Operations',
-  bio: 'I study physics with a minor in computer science and work across product, technical coordination, and startup operations. My long-term direction is to build deep-tech products at the intersection of science, technology, and entrepreneurship.',
+  bio: 'I’m studying physics with a minor in computer science. Alongside university, I work across product, technical coordination, and the day-to-day of a startup. I’m drawn to where science and technology become useful products, and over time I’d like to build deep-tech products in that space.',
   location: '', profileImage: '/profile.jpeg',
   emails: [
     { type: 'academic', address: 'ar.dn@aut.ac.ir' },

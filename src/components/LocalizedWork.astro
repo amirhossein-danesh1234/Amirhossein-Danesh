@@ -1,5 +1,100 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro'; import PageHeader from './PageHeader.astro'; import WorkItem from './WorkItem.astro'; import type { Locale } from '../i18n/config'; import type { WorkEntry } from '../data/en/work'; import { messages } from '../i18n/messages';
-type Profile = { name: string }; const { locale, profile, work } = Astro.props as { locale: Locale; profile: Profile; work: WorkEntry[] }; const copy = messages[locale];
+import BaseLayout from '../layouts/BaseLayout.astro';
+import type { Locale } from '../i18n/config';
+import type { WorkCaseStudy } from '../data/en/work';
+
+const { locale, profile, caseStudy } = Astro.props as {
+  locale: Locale;
+  profile: { name: string };
+  caseStudy: WorkCaseStudy;
+};
+const workflowLine = locale === 'fa' ? 'ادامهٔ روند' : 'Next step';
 ---
-<BaseLayout title={`${copy.nav.work} — ${profile.name}`} description={copy.pages.work.description} currentPath="/work" locale={locale}><main class="content-page"><PageHeader eyebrow={copy.pages.work.eyebrow} title={copy.pages.work.title} description={copy.pages.work.description} /><div class="list">{work.map((entry) => <WorkItem locale={locale} entry={entry} />)}</div></main></BaseLayout>
+
+<BaseLayout title={`${caseStudy.projectName} — ${profile.name}`} description={caseStudy.introduction} currentPath="/work" locale={locale}>
+  <main class="content-page work-case-study">
+    <header class="work-hero">
+      <p class="eyebrow">{locale === 'fa' ? 'تجربهٔ کاری' : 'Experience'}</p>
+      <h1>{caseStudy.projectName}</h1>
+      <p class="work-hero__role">{caseStudy.role}</p>
+      <p class="work-hero__introduction">{caseStudy.introduction}</p>
+    </header>
+
+    <section class="case-section" aria-labelledby="case-role-title">
+      <h2 id="case-role-title">{caseStudy.sections.myRole}</h2>
+      <div class="case-section__content"><p class="case-lead">{caseStudy.roleSummary}</p></div>
+    </section>
+
+    <section class="case-section" aria-labelledby="case-work-title">
+      <h2 id="case-work-title">{caseStudy.sections.whatIDo}</h2>
+      <div class="case-section__content case-workstreams">
+        {caseStudy.workStreams.map((stream) => <article class="case-workstream">
+          <header><h3>{stream.title}</h3><p>{stream.summary}</p></header>
+          <ul>{stream.items.map((item) => <li>{item}</li>)}</ul>
+        </article>)}
+      </div>
+    </section>
+
+    <section class="case-section" aria-labelledby="case-team-title">
+      <h2 id="case-team-title">{caseStudy.sections.workingWithTeam}</h2>
+      <div class="case-section__content">
+        <p class="case-lead">{caseStudy.team.description}</p>
+        <ul class="case-collaborators">{caseStudy.team.collaborators.map((person) => <li>{person}</li>)}</ul>
+      </div>
+    </section>
+
+    <section class="case-section" aria-labelledby="case-workflow-title">
+      <h2 id="case-workflow-title">{caseStudy.sections.workflow}</h2>
+      <div class="case-section__content">
+        <p class="muted">{caseStudy.workflow.description}</p>
+        <ol class="workflow-steps" aria-label={workflowLine}>
+          {caseStudy.workflow.steps.map((step, index) => <li>
+            <span class="workflow-step__number">{String(index + 1).padStart(2, '0')}</span>
+            <span class="workflow-step__text">{step}</span>
+            {index < caseStudy.workflow.steps.length - 1 && <span class="workflow-step__connector" aria-hidden="true" />}
+          </li>)}
+        </ol>
+      </div>
+    </section>
+
+    <section class="case-section" aria-labelledby="case-tools-title">
+      <h2 id="case-tools-title">{caseStudy.sections.tools}</h2>
+      <div class="case-section__content case-tool-groups">
+        {caseStudy.tools.map((group) => <section class="case-tool-group">
+          <h3>{group.title}</h3>
+          <ul>{group.items.map((tool) => <li><strong>{tool.name}</strong><p>{tool.description}</p></li>)}</ul>
+        </section>)}
+      </div>
+    </section>
+
+    <section class="case-section" aria-labelledby="case-artifacts-title">
+      <h2 id="case-artifacts-title">{caseStudy.sections.artifacts}</h2>
+      <div class="case-section__content case-artifact-groups">
+        {caseStudy.artifacts.map((group) => <section class="case-artifact-group">
+          <h3>{group.title}</h3>
+          <ul>{group.items.map((item) => <li>{item}</li>)}</ul>
+        </section>)}
+      </div>
+    </section>
+
+    <section class="case-section" aria-labelledby="case-principles-title">
+      <h2 id="case-principles-title">{caseStudy.sections.howIWork}</h2>
+      <div class="case-section__content case-principles">
+        {caseStudy.principles.map((principle) => <article>
+          <h3>{principle.title}</h3>
+          <p>{principle.description}</p>
+        </article>)}
+      </div>
+    </section>
+
+    <section class="case-section" aria-labelledby="case-outcomes-title">
+      <h2 id="case-outcomes-title">{caseStudy.sections.outcomes}</h2>
+      <div class="case-section__content"><ul class="case-outcomes">{caseStudy.outcomes.map((outcome) => <li>{outcome}</li>)}</ul></div>
+    </section>
+
+    <aside class="case-confidentiality">
+      <h2>{caseStudy.sections.confidentiality}</h2>
+      <p>{caseStudy.confidentialityNote}</p>
+    </aside>
+  </main>
+</BaseLayout>

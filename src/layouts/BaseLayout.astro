@@ -1,7 +1,8 @@
 ---
 import '../styles/global.css';
 import SiteNav from '../components/SiteNav.astro';
-import { profile } from '../data/en/profile';
+import { profile as englishProfile } from '../data/en/profile';
+import { profile as persianProfile } from '../data/fa/profile';
 import type { Locale } from '../i18n/config';
 import { toLocalizedPath } from '../i18n/paths';
 
@@ -14,6 +15,7 @@ interface Props {
 }
 
 const { title, description, currentPath = '/', jsonLd, locale } = Astro.props;
+const profile = locale === 'fa' ? persianProfile : englishProfile;
 const canonical = new URL(toLocalizedPath(locale, currentPath), Astro.site ?? 'https://amirhossein-danesh.ir').toString();
 const schema = jsonLd ?? (currentPath === '/' ? {
   '@context': 'https://schema.org',

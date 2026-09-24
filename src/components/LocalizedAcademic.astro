@@ -1,6 +1,110 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro'; import PageHeader from './PageHeader.astro'; import type { Locale } from '../i18n/config'; import { messages } from '../i18n/messages';
-type Profile = { name: string }; type Academic = { university: string; degree: string; minor: string; selectedCoursework: string[]; activities: string[]; researchInterests: string[]; events: string[] };
-const { locale, profile, academic } = Astro.props as { locale: Locale; profile: Profile; academic: Academic }; const copy = messages[locale]; const sections = [{ label: copy.academic.coursework, items: academic.selectedCoursework }, { label: copy.academic.activities, items: academic.activities }, { label: copy.academic.research, items: academic.researchInterests }, { label: copy.academic.events, items: academic.events }];
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from './PageHeader.astro';
+import type { Locale } from '../i18n/config';
+import { messages } from '../i18n/messages';
+
+type Profile = { name: string };
+type Academic = {
+  educationTitle: string;
+  educationIntro: string;
+  university: string;
+  degree: string;
+  universityPeriod: string;
+  minor: string;
+  universityDescription: string;
+  universityTags: string[];
+  secondaryTitle: string;
+  nodet: string;
+  nodetPeriod: string;
+  nodetDescription: string;
+  schoolTransitions: string[];
+  bahonar: string;
+  bahonarPeriod: string;
+  earlierNoteTitle: string;
+  earlierNote: string;
+  selectedCoursework: string[];
+  researchInterests: string[];
+  events: string[];
+};
+
+const { locale, profile, academic } = Astro.props as { locale: Locale; profile: Profile; academic: Academic };
+const copy = messages[locale];
 ---
-<BaseLayout title={`${copy.nav.academic} — ${profile.name}`} description={copy.pages.academic.description} currentPath="/academic" locale={locale}><main class="content-page"><PageHeader eyebrow={copy.pages.academic.eyebrow} title={academic.degree} description={academic.university} /><div class="academic-primary"><p class="eyebrow">{copy.academic.university}</p><h2>{academic.university}</h2><p class="muted">{academic.minor}</p></div>{sections.filter((section) => section.items.length > 0).map((section) => <section class="subsection"><h2>{section.label}</h2><ul>{section.items.map((item) => <li>{item}</li>)}</ul></section>)}</main></BaseLayout>
+
+<BaseLayout title={`${copy.nav.academic} — ${profile.name}`} description={academic.educationIntro} currentPath="/academic" locale={locale}>
+  <main class="content-page academic-page">
+    <PageHeader eyebrow={copy.labels.academicResearch} title={academic.educationTitle} description={academic.educationIntro} />
+
+    <section class="education-timeline" aria-label={academic.educationTitle}>
+      <article class="education-entry education-entry--university">
+        <div class="education-entry__rail" aria-hidden="true"><span></span></div>
+        <div class="education-entry__body">
+          <header class="education-entry__heading">
+            <div>
+              <p class="education-entry__period">{academic.universityPeriod}</p>
+              <h2>{academic.university}</h2>
+            </div>
+            <span class="education-entry__marker" aria-hidden="true"></span>
+          </header>
+          <h3>{academic.degree}</h3>
+          <p class="education-entry__minor">{academic.minor}</p>
+          <p class="education-entry__description">{academic.universityDescription}</p>
+          <ul class="education-tags" aria-label={locale === 'fa' ? 'حوزه‌های تحصیل' : 'Fields of study'}>
+            {academic.universityTags.map((tag) => <li>{tag}</li>)}
+          </ul>
+        </div>
+      </article>
+
+      <section class="education-secondary" aria-labelledby="secondary-education-title">
+        <h2 id="secondary-education-title">{academic.secondaryTitle}</h2>
+        <div class="education-entry education-entry--secondary">
+          <div class="education-entry__rail" aria-hidden="true"><span></span></div>
+          <div class="education-entry__body">
+            <header class="education-entry__heading">
+              <div>
+                <p class="education-entry__period">{academic.nodetPeriod}</p>
+                <h3>{academic.nodet}</h3>
+              </div>
+              <span class="education-entry__marker" aria-hidden="true"></span>
+            </header>
+            <p class="education-entry__description">{academic.nodetDescription}</p>
+            <ol class="education-transitions">
+              {academic.schoolTransitions.map((transition) => <li>{transition}</li>)}
+            </ol>
+          </div>
+        </div>
+        <div class="education-entry education-entry--school">
+          <div class="education-entry__rail" aria-hidden="true"><span></span></div>
+          <div class="education-entry__body education-entry__body--compact">
+            <header class="education-entry__heading">
+              <h3>{academic.bahonar}</h3>
+              <p class="education-entry__period">{academic.bahonarPeriod}</p>
+            </header>
+          </div>
+        </div>
+        <aside class="education-note">
+          <p>{academic.earlierNoteTitle}</p>
+          <span>{academic.earlierNote}</span>
+        </aside>
+      </section>
+    </section>
+
+    <section class="academic-followup" aria-labelledby="coursework-title">
+      <h2 id="coursework-title">{copy.academic.coursework}</h2>
+      {academic.selectedCoursework.length > 0
+        ? <ul>{academic.selectedCoursework.map((item) => <li>{item}</li>)}</ul>
+        : <p class="academic-followup__empty">{locale === 'fa' ? 'وقتی درس‌های منتخبم مشخص‌تر شوند، چندتایشان را اینجا می‌آورم.' : 'I’ll add a few selected courses here as my studies progress.'}</p>}
+    </section>
+
+    <section class="academic-followup" aria-labelledby="research-interests-title">
+      <h2 id="research-interests-title">{copy.academic.research}</h2>
+      <ul class="academic-interest-list">{academic.researchInterests.map((item) => <li>{item}</li>)}</ul>
+    </section>
+
+    {academic.events.length > 0 && <section class="academic-followup" aria-labelledby="research-projects-title">
+      <h2 id="research-projects-title">{locale === 'fa' ? 'پروژه‌های پژوهشی و دانشگاهی' : 'Research & Academic Projects'}</h2>
+      <ul>{academic.events.map((item) => <li>{item}</li>)}</ul>
+    </section>}
+  </main>
+</BaseLayout>

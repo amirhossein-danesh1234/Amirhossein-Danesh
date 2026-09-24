@@ -1,5 +1,6 @@
 ---
-import { profile } from '../data/en/profile';
+import { profile as englishProfile } from '../data/en/profile';
+import { profile as persianProfile } from '../data/fa/profile';
 import ThemeToggle from './ThemeToggle.astro';
 import LanguageSwitch from './LanguageSwitch.astro';
 import type { Locale } from '../i18n/config';
@@ -8,6 +9,7 @@ import { toLocalizedPath } from '../i18n/paths';
 import SocialIcon from './SocialIcon.astro';
 const { currentPath, locale } = Astro.props as { currentPath: string; locale: Locale };
 const copy = messages[locale];
+const profile = locale === 'fa' ? persianProfile : englishProfile;
 const items = [
   { label: copy.nav.work, href: '/work' }, { label: copy.nav.projects, href: '/projects' }, { label: copy.nav.academic, href: '/academic' }, { label: copy.nav.skills, href: '/skills' }, { label: copy.nav.about, href: '/about' },
 ];

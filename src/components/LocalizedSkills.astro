@@ -1,5 +1,72 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro'; import PageHeader from './PageHeader.astro'; import type { Locale } from '../i18n/config'; import type { SkillGroup } from '../data/en/skills'; import { messages } from '../i18n/messages';
-type Profile = { name: string }; const { locale, profile, skills } = Astro.props as { locale: Locale; profile: Profile; skills: SkillGroup[] }; const copy = messages[locale];
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from './PageHeader.astro';
+import type { Locale } from '../i18n/config';
+import type { Capability, DevelopingArea, SkillToolGroup } from '../data/en/skills';
+import { messages } from '../i18n/messages';
+
+type Profile = { name: string };
+const { locale, profile, capabilities, toolGroups, developingAreas } = Astro.props as {
+  locale: Locale;
+  profile: Profile;
+  capabilities: Capability[];
+  toolGroups: SkillToolGroup[];
+  developingAreas: DevelopingArea[];
+};
+const copy = messages[locale];
+const arrow = locale === 'fa' ? '←' : '→';
 ---
-<BaseLayout title={`${copy.nav.skills} — ${profile.name}`} description={copy.pages.skills.description} currentPath="/skills" locale={locale}><main class="content-page"><PageHeader eyebrow={copy.pages.skills.eyebrow} title={copy.pages.skills.title} description={copy.pages.skills.description} /><div class="skill-list">{skills.map((group) => <section class="skill-group"><h2>{group.name}</h2>{group.items.length > 0 ? <ul>{group.items.map((item) => <li>{item}</li>)}</ul> : <p class="muted">{locale === 'fa' ? 'برای به‌روزرسانی.' : 'To be updated.'}</p>}</section>)}</div></main></BaseLayout>
+
+<BaseLayout title={`${copy.nav.skills} — ${profile.name}`} description={copy.pages.skills.description} currentPath="/skills" locale={locale}>
+  <main class="content-page capabilities-page">
+    <PageHeader eyebrow={copy.pages.skills.eyebrow} title={copy.pages.skills.title} description={copy.pages.skills.description} />
+
+    <section class="capabilities-list" aria-label={copy.pages.skills.capabilities}>
+      {capabilities.map((capability) => (
+        <article class:list={['capability', capability.featured && 'capability--featured', capability.compact && 'capability--compact']}>
+          <div class="capability__main">
+            <h2>{capability.title}</h2>
+            <p class="capability__summary">{capability.summary}</p>
+            <ul class="capability__items">
+              {capability.items.map((item) => <li>{item}</li>)}
+            </ul>
+            <p class="capability__description">{capability.description}</p>
+            {(capability.evidenceNote || capability.evidence) && <div class="capability__proof">
+              {capability.evidenceNote && <p>{capability.evidenceNote}</p>}
+              {capability.evidence && <nav class="capability__evidence" aria-label={`${copy.pages.skills.seeInPractice}: ${capability.title}`}>
+                {capability.evidence.map((evidence) => <a href={evidence.href}>{evidence.label} <span aria-hidden="true">{arrow}</span></a>)}
+              </nav>}
+            </div>}
+          </div>
+        </article>
+      ))}
+    </section>
+
+    <section class="skills-tools" aria-labelledby="skills-tools-title">
+      <header class="skills-section-heading">
+        <h2 id="skills-tools-title">{copy.pages.skills.tools}</h2>
+      </header>
+      <div class="skills-tool-groups">
+        {toolGroups.map((group) => <section class="skills-tool-group">
+          <h3>{group.title}</h3>
+          <ul>
+            {group.tools.map((tool) => <li><strong>{tool.name}</strong><span>{tool.description}</span></li>)}
+          </ul>
+        </section>)}
+      </div>
+    </section>
+
+    <section class="skills-developing" aria-labelledby="skills-developing-title">
+      <header class="skills-section-heading skills-section-heading--intro">
+        <h2 id="skills-developing-title">{copy.pages.skills.developing}</h2>
+        <p>{copy.pages.skills.developingIntro}</p>
+      </header>
+      <div class="developing-grid">
+        {developingAreas.map((area) => <article>
+          <h3>{area.title}</h3>
+          <p>{area.description}</p>
+        </article>)}
+      </div>
+    </section>
+  </main>
+</BaseLayout>

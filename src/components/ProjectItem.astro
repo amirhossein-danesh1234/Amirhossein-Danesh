@@ -1,12 +1,16 @@
 ---
 import type { Project } from '../data/en/projects';
 import type { Locale } from '../i18n/config';
+import SocialIcon from './SocialIcon.astro';
 const { project, locale } = Astro.props as { project: Project; locale: Locale };
-const arrow = locale === 'fa' ? '↖' : '↗';
 ---
 <article class="list-item project-item">
-  <div class="list-item__heading"><h2>{project.title}</h2>{project.externalUrl && <a href={project.externalUrl} target="_blank" rel="noreferrer" aria-label={`Open ${project.title}`}>{arrow}</a>}</div>
+  {(project.githubUrl || project.externalUrl) && <nav class="project-item__links" aria-label={locale === 'fa' ? `پیوندهای ${project.title}` : `Links for ${project.title}`}>
+    {project.githubUrl && <a href={project.githubUrl} target="_blank" rel="noreferrer" aria-label={locale === 'fa' ? `مخزن ${project.title} در گیت‌هاب` : `GitHub repository: ${project.title}`}><SocialIcon name="github" /></a>}
+    {project.externalUrl && <a class="project-item__external" href={project.externalUrl} target="_blank" rel="noreferrer" aria-label={locale === 'fa' ? `نمایش ${project.title}` : `View ${project.title}`}><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14 4h6v6M20 4 10 14" /><path d="M18 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5" /></svg></a>}
+  </nav>}
+  <div class="list-item__heading"><h2>{project.title}</h2></div>
   {project.role && <p class="muted">{project.role}</p>}
   {project.description && <p>{project.description}</p>}
-  <div class="metadata">{project.year && <span>{project.year}</span>}{project.status && <span>{project.status}</span>}{project.categories.length > 0 && <span>{project.categories.join(' · ')}</span>}{project.githubUrl && <a href={project.githubUrl} target="_blank" rel="noreferrer">GitHub ↗</a>}</div>
+  {(project.year || project.status || project.categories.length > 0) && <div class="metadata">{project.year && <span>{project.year}</span>}{project.status && <span>{project.status}</span>}{project.categories.length > 0 && <span>{project.categories.join(' · ')}</span>}</div>}
 </article>
