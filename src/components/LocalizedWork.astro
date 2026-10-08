@@ -22,7 +22,7 @@ const greenWorkPhrases = locale === 'fa'
   <main class="content-page work-case-study">
     <header class="work-hero">
       <p class="eyebrow">{locale === 'fa' ? 'تجربهٔ کاری' : 'Experience'}</p>
-      <h1><KeyPhraseText text={caseStudy.projectName} greenPhrases={greenWorkPhrases} /></h1>
+      <h1>{caseStudy.projectName}</h1>
       <p class="work-hero__role"><KeyPhraseText text={caseStudy.role} phrases={redWorkPhrases} greenPhrases={greenWorkPhrases} /></p>
       <p class="work-hero__introduction"><KeyPhraseText text={caseStudy.introduction} phrases={redWorkPhrases} greenPhrases={greenWorkPhrases} /></p>
     </header>

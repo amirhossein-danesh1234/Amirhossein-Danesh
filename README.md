@@ -26,7 +26,7 @@ Edit `src/data/profile.ts` for identity and links, `src/data/now.ts` for the fre
 
 ## Deployment
 
-`scripts/deploy.ps1` builds `dist/`, uploads a timestamped archive through the `VPN` SSH alias, and switches the server's atomic release symlink. Production serves static files through Nginx on origin HTTP port 80; ArvanCloud handles public HTTPS. Xray remains on TCP 443.
+`scripts/deploy.ps1` verifies that the clean local commit matches GitHub main, builds `dist/`, uploads a timestamped archive through the `amirhossein-danesh` SSH alias, and switches the server's atomic release symlink. Each release records its Git SHA in `REVISION`. Production serves static files through Nginx on origin HTTP port 80; ArvanCloud handles public HTTPS. The `app` subdomain redirects to the main site. Pass `-SshAlias` to use another explicitly configured host.
 
 ## Future path
 

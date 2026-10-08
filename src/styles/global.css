@@ -58,6 +58,10 @@
 
 html[lang="en"] { font-family: var(--font-latin); }
 html[lang="fa"] { font-family: var(--font-persian); }
+/* Letter spacing can distort connected Persian letterforms, especially in headings. */
+html[lang="fa"] *,
+html[lang="fa"] *::before,
+html[lang="fa"] *::after { letter-spacing: normal; }
 .key-phrase { color: var(--color-key-phrase); font-weight: 650; transition: color 360ms cubic-bezier(.2, .7, .2, 1); }
 .key-phrase--green { color: var(--color-key-phrase-green); font-weight: 650; transition: color 360ms cubic-bezier(.2, .7, .2, 1); }
 * { box-sizing: border-box; }

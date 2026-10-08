@@ -1,5 +1,150 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro'; import KeyPhraseText from './KeyPhraseText.astro'; import type { Locale } from '../i18n/config'; import type { Project } from '../data/en/projects'; import type { SkillGroup } from '../data/en/skills'; import type { WorkEntry } from '../data/en/work'; import { messages } from '../i18n/messages';
-type Profile = { name: string; title: string; bio: string }; type Academic = { university: string; degree: string }; const { locale, profile, work, projects, academic, skills } = Astro.props as { locale: Locale; profile: Profile; work: WorkEntry[]; projects: Project[]; academic: Academic; skills: SkillGroup[] }; const copy = messages[locale];
+import BaseLayout from '../layouts/BaseLayout.astro';
+import type { Locale } from '../i18n/config';
+import type { Project } from '../data/en/projects';
+import type { SkillToolGroup, DevelopingArea } from '../data/en/skills';
+import type { WorkEntry } from '../data/en/work';
+import { messages } from '../i18n/messages';
+
+type Profile = { name: string; title: string; bio: string };
+type Academic = {
+  university: string;
+  degree: string;
+  universityPeriod: string;
+  minor: string;
+  universityDescription: string;
+  universityTags: string[];
+  secondaryTitle: string;
+  nodet: string;
+  nodetPeriod: string;
+  nodetDescription: string;
+  schoolTransitions: string[];
+  bahonar: string;
+  bahonarPeriod: string;
+  earlierNoteTitle: string;
+  earlierNote: string;
+  selectedCoursework: string[];
+  researchInterests: string[];
+};
+type Capability = { title: string; items: string[]; description: string; evidence?: { label: string; href: string }[] };
+
+type Props = {
+  locale: Locale;
+  profile: Profile;
+  work: WorkEntry[];
+  projects: Project[];
+  academic: Academic;
+  capabilities: Capability[];
+  toolGroups: SkillToolGroup[];
+  developingAreas: DevelopingArea[];
+};
+
+const { locale, profile, work, projects, academic, capabilities, toolGroups, developingAreas } = Astro.props as Props;
+const copy = messages[locale];
+const resumeCopy = locale === 'fa' ? {
+  coursework: 'درس‌های منتخب', research: 'علایق پژوهشی', tools: 'ابزارها', developing: 'در حال یادگیری و توسعه',
+  secondary: 'دوره متوسطه', areas: 'توانمندی‌ها', projects: 'پروژه‌ها', work: 'تجربه کاری', education: 'تحصیلات',
+  present: 'تاکنون', confidential: 'محرمانه',
+} : {
+  coursework: 'Selected Coursework', research: 'Research Interests', tools: 'Tools', developing: 'Currently Developing',
+  secondary: 'Secondary Education', areas: 'Capabilities', projects: 'Projects', work: 'Experience', education: 'Education',
+  present: 'Present', confidential: 'Confidential',
+};
 ---
-<BaseLayout title={`${copy.nav.resume} — ${profile.name}`} description={`${copy.nav.resume} — ${profile.name}`} currentPath="/resume" locale={locale}><main class="resume-page"><div class="resume-heading"><div><p class="eyebrow">{copy.pages.resume.eyebrow}</p><h1>{profile.name}</h1><p><KeyPhraseText text={profile.title} phrases={locale === 'fa' ? ['دانشجوی فیزیک و علوم کامپیوتر'] : ['Physics & Computer Science Student']} greenPhrases={locale === 'fa' ? ['محصول و عملیات فنی'] : ['Product & Technical Operations']} /></p></div></div><section class="resume-section"><h2>{copy.pages.resume.profile}</h2><p><KeyPhraseText text={profile.bio} phrases={locale === 'fa' ? ['ماینور علوم کامپیوتر'] : ['minor in computer science']} greenPhrases={locale === 'fa' ? ['محصول‌های واقعی', 'محصولات فناوری عمیق'] : ['useful products', 'deep-tech products']} /></p></section><section class="resume-section"><h2>{copy.pages.resume.work}</h2>{work.map((entry) => <div class="resume-entry"><h3 class="key-phrase--green">{entry.organization}</h3><p class="muted">{entry.role}{entry.startDate && ` · ${entry.startDate} — ${entry.endDate || (locale === 'fa' ? 'فعلی' : 'Present')}`}</p>{entry.description && <p><KeyPhraseText text={entry.description} greenPhrases={locale === 'fa' ? ['محصولی دیجیتال', 'هماهنگی فنی'] : ['digital B2B product', 'product, technology, and delivery']} /></p>}</div>)}</section><section class="resume-section"><h2>{copy.pages.resume.projects}</h2>{projects.map((project) => <div class="resume-entry"><h3 class={['physics-workspace', 'personal-ai-agent'].includes(project.slug) ? 'key-phrase' : 'key-phrase--green'}>{project.title}</h3>{project.role && <p class="muted">{project.role}</p>}{project.description && <p>{project.description}</p>}</div>)}</section><section class="resume-section"><h2>{copy.pages.resume.academic}</h2><div class="resume-entry"><h3 class="key-phrase">{academic.degree}</h3><p class="key-phrase">{academic.university}</p></div></section><section class="resume-section"><h2>{copy.pages.resume.areas}</h2><p>{skills.map((skill) => skill.name).join(' · ')}</p></section></main></BaseLayout>
+<BaseLayout title={`${copy.nav.resume} — ${profile.name}`} description={`${copy.nav.resume} — ${profile.name}`} currentPath="/resume" locale={locale}>
+  <main class="resume-page">
+    <header class="resume-heading">
+      <div>
+        <p class="eyebrow">{copy.pages.resume.eyebrow}</p>
+        <h1>{profile.name}</h1>
+        <p>{profile.title}</p>
+      </div>
+    </header>
+
+    <section class="resume-section">
+      <h2>{copy.pages.resume.profile}</h2>
+      <p>{profile.bio}</p>
+    </section>
+
+    <section class="resume-section">
+      <h2>{resumeCopy.work}</h2>
+      {work.map((entry) => <article class="resume-entry">
+        <h3>{entry.organization}</h3>
+        <p class="muted">{entry.role}{entry.startDate && ` · ${entry.startDate} — ${entry.endDate || resumeCopy.present}`}</p>
+        {entry.status && <p class="muted">{entry.status}</p>}
+        {entry.description && <p>{entry.description}</p>}
+        {entry.responsibilities.length > 0 && <ul>{entry.responsibilities.map((item) => <li>{item}</li>)}</ul>}
+      </article>)}
+    </section>
+
+    <section class="resume-section">
+      <h2>{resumeCopy.projects}</h2>
+      {projects.map((project) => <article class="resume-entry">
+        <h3>{project.title}</h3>
+        {project.role && <p class="muted">{project.role}</p>}
+        {project.status && <p class="muted">{project.status}</p>}
+        {project.description && <p>{project.description}</p>}
+        {project.technologies.length > 0 && <p class="muted">{project.technologies.join(' · ')}</p>}
+        {project.githubUrl && <p><a href={project.githubUrl} target="_blank" rel="noreferrer">GitHub ↗</a></p>}
+        {project.externalUrl && <p><a href={project.externalUrl} target="_blank" rel="noreferrer">{project.title} ↗</a></p>}
+      </article>)}
+    </section>
+
+    <section class="resume-section">
+      <h2>{resumeCopy.education}</h2>
+      <article class="resume-entry">
+        <h3>{academic.degree}</h3>
+        <p>{academic.university} · {academic.universityPeriod}</p>
+        <p>{academic.minor}</p>
+        <p>{academic.universityDescription}</p>
+        <p class="muted">{academic.universityTags.join(' · ')}</p>
+      </article>
+      <article class="resume-entry">
+        <h3>{academic.nodet}</h3>
+        <p class="muted">{academic.nodetPeriod}</p>
+        <p>{academic.nodetDescription}</p>
+        <ul>{academic.schoolTransitions.map((transition) => <li>{transition}</li>)}</ul>
+      </article>
+      <article class="resume-entry">
+        <h3>{academic.bahonar}</h3>
+        <p class="muted">{academic.bahonarPeriod}</p>
+      </article>
+      <aside class="resume-note"><strong>{academic.earlierNoteTitle}:</strong> {academic.earlierNote}</aside>
+    </section>
+
+    {academic.selectedCoursework.length > 0 && <section class="resume-section">
+      <h2>{resumeCopy.coursework}</h2>
+      <ul>{academic.selectedCoursework.map((course) => <li>{course}</li>)}</ul>
+    </section>}
+
+    <section class="resume-section">
+      <h2>{resumeCopy.research}</h2>
+      <ul>{academic.researchInterests.map((interest) => <li>{interest}</li>)}</ul>
+    </section>
+
+    <section class="resume-section">
+      <h2>{resumeCopy.areas}</h2>
+      {capabilities.map((capability) => <article class="resume-entry">
+        <h3>{capability.title}</h3>
+        <p>{capability.description}</p>
+        <ul>{capability.items.map((item) => <li>{item}</li>)}</ul>
+      </article>)}
+    </section>
+
+    <section class="resume-section">
+      <h2>{resumeCopy.tools}</h2>
+      {toolGroups.map((group) => <article class="resume-entry">
+        <h3>{group.title}</h3>
+        <ul>{group.tools.map((tool) => <li><strong>{tool.name}</strong> — {tool.description}</li>)}</ul>
+      </article>)}
+    </section>
+
+    <section class="resume-section">
+      <h2>{resumeCopy.developing}</h2>
+      {developingAreas.map((area) => <article class="resume-entry">
+        <h3>{area.title}</h3>
+        <p>{area.description}</p>
+      </article>)}
+    </section>
+  </main>
+</BaseLayout>

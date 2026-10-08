@@ -11,4 +11,4 @@ interface Props {
 
 const { eyebrow, title, description, redPhrases = [], greenPhrases = [] } = Astro.props;
 ---
-<header class="page-header"><p class="eyebrow">{eyebrow}</p><h1><KeyPhraseText text={title} phrases={redPhrases} greenPhrases={greenPhrases} /></h1><p><KeyPhraseText text={description} phrases={redPhrases} greenPhrases={greenPhrases} /></p></header>
+<header class="page-header"><p class="eyebrow">{eyebrow}</p><h1>{title}</h1><p><KeyPhraseText text={description} phrases={redPhrases} greenPhrases={greenPhrases} /></p></header>

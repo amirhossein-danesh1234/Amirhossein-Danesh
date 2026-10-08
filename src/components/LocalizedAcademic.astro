@@ -46,11 +46,11 @@ const secondaryPhrases = locale === 'fa' ? ['مدارس استعدادهای د�
           <header class="education-entry__heading">
             <div>
               <p class="education-entry__period">{academic.universityPeriod}</p>
-              <h2><span class="key-phrase">{academic.university}</span></h2>
+              <h2>{academic.university}</h2>
             </div>
             <span class="education-entry__marker" aria-hidden="true"></span>
           </header>
-          <h3 class="key-phrase">{academic.degree}</h3>
+          <h3>{academic.degree}</h3>
           <p class="education-entry__minor key-phrase">{academic.minor}</p>
           <p class="education-entry__description"><KeyPhraseText text={academic.universityDescription} phrases={academicPhrases} greenPhrases={locale === 'fa' ? ['محاسبات، الگوریتم‌ها'] : ['computation, algorithms']} /></p>
           <ul class="education-tags" aria-label={locale === 'fa' ? 'حوزه‌های تحصیل' : 'Fields of study'}>
