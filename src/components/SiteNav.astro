@@ -22,6 +22,9 @@ const items = [
     </div>
   </div>
   <div class="site-nav__actions">
+    <a class="site-nav__icon-link" href="https://unilrn.amirhossein-danesh.ir" aria-label={locale === 'fa' ? 'یونی‌لرن' : 'Unilrn'} title={locale === 'fa' ? 'یونی‌لرن' : 'Unilrn'}>
+      <img src="/brand/unilrn-logo.png" alt="" width="24" height="24" />
+    </a>
     <a class="site-nav__icon-link" class:list-active={currentPath === '/resume'} href={toLocalizedPath(locale, '/resume')} aria-label={copy.nav.resume}>
       <SocialIcon name="resume" />
       <span class="sr-only">{copy.nav.resume}</span>
