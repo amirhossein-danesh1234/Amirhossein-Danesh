@@ -1,0 +1,85 @@
+---
+import { pitchNames } from '../music/notation';
+---
+<section id="editor" class="editor" aria-labelledby="editor-heading" hidden>
+        <h2 id="editor-heading">ویرایش قطعه</h2>
+        <form id="edit-form">
+          <div class="editor-heading-row">
+            <h3>متن و آکوردها</h3>
+            <button class="quiet" type="button" id="editor-back">بازگشت به قطعه‌ها</button>
+          </div>
+          <div class="actions" id="editor-modes">
+            <button type="button" id="visual-mode" aria-pressed="true">ویرایش تصویری</button>
+            <button type="button" id="raw-mode" aria-pressed="false">متن نشانه‌گذاری‌شده</button>
+          </div>
+          <div id="visual-score">
+            <label for="visual-lyrics">متن ترانه</label>
+            <textarea id="visual-lyrics" rows="9" maxlength="16000" placeholder="متن ترانه را بنویس یا جای‌گذاری کن."></textarea>
+          </div>
+          <label for="score-input" id="score-label">متن، آکورد و نشانه‌های اجرا</label>
+          <textarea id="score-input" rows="10" maxlength="16000" placeholder="متن ترانه را سطر به سطر بنویسید." aria-describedby="score-format"></textarea>
+          <div id="score-tools" class="score-tools" hidden>
+            <div class="actions">
+              <button class="quiet" type="button" id="toggle-chord-tool" aria-expanded="false" aria-controls="chord-tool">آکورد</button>
+              <details class="insert-menu"><summary>درج نشانه</summary>
+                <div class="actions">
+                  <button class="quiet" type="button" data-score-line="# بخش تازه">بخش</button>
+                  <button class="quiet" type="button" data-score-line="! ۲ ضرب مکث">مکث</button>
+                  <button class="quiet" type="button" data-score-line="~ تار | A4 C5 E5">ملودی</button>
+                </div>
+              </details>
+            </div>
+            <div class="actions chord-tool" id="chord-tool" hidden>
+            <label for="chord-input">آکورد</label>
+            <input id="chord-input" dir="ltr" maxlength="14" placeholder="Am" list="common-chords" />
+            <datalist id="common-chords"></datalist>
+            <button class="quiet" type="button" id="add-chord">درج آکورد</button>
+            <button class="quiet" type="button" id="add-intro">آکورد پیش از آواز</button>
+              <button class="quiet" type="button" id="move-chord" hidden>انتقال به واژهٔ انتخاب‌شده</button>
+              <button class="quiet" type="button" id="remove-chord" hidden>برداشتن آکورد</button>
+              <small id="chord-context" dir="auto"></small>
+            </div>
+          </div>
+          <details id="score-format">
+            <summary>روش نوشتن آکورد، مکث و ملودی</summary>
+            <p>آکورد را درست پیش از واژهٔ مورد نظر بین کروشه بگذار، مثل <bdi>[Am]</bdi> یا <bdi>[G/B]</bdi>. برای عنوان بخش، سطر را با <bdi>#</bdi> شروع کن.</p>
+            <p>برای مکث، سطر را با <bdi>!</bdi> شروع کن، مثل «! ۲ ضرب مکث». برای بخش بی‌کلام از <bdi>~</bdi> استفاده کن و نت‌ها را بعد از <bdi>|</bdi> بنویس، مثل <bdi>~ سه‌تار | A4 C5 E5</bdi>.</p>
+          </details>
+          <div id="owner-fields">
+            <details class="editor-section" id="metadata-section"><summary>مشخصات قطعه</summary>
+              <div class="fields">
+            <label>نام قطعه <input id="title" maxlength="100" /></label>
+            <label>نشانی قطعه <input id="slug" maxlength="100" /><small id="slug-preview" dir="ltr"></small></label>
+            <label>خواننده یا توضیح کوتاه <input id="artist" maxlength="120" /></label>
+            <label>گام اصلی <select id="original-key" dir="ltr">{pitchNames.map((name, i) => <option value={i}>{name}</option>)}</select></label>
+            <label>نوع گام <select id="mode"><option value="major">ماژور</option><option value="minor">مینور</option></select></label>
+              <div class="fields" id="metadata-fields">
+                {Object.entries({composer:'آهنگساز',lyricist:'ترانه‌سرا',instrument:'ساز اصلی',timeSignature:'کسر میزان',rhythm:'ریتم',tempo:'سرعت (BPM)',dastgah:'دستگاه یا آواز',difficulty:'درجه سختی',notes:'توضیحات'}).map(([name,label]) =>
+                  <label>{label}<input data-metadata={name} maxlength={name === 'notes' ? 2000 : 120} /></label>
+                )}
+              </div>
+              </div>
+            </details>
+            <details class="editor-section" id="media-section"><summary>اجراها و فایل‌ها</summary>
+              <div id="take-fields"></div>
+              <button type="button" id="add-take">افزودن اجرا</button>
+            </details>
+            <details class="editor-section" id="publishing-section"><summary>انتشار و اشتراک‌گذاری</summary>
+              <div class="fields">
+            <label>وضعیت انتشار <select id="visibility"><option value="draft">پیش‌نویس</option><option value="published">منتشرشده</option><option value="unlisted">دارای پیوند</option><option value="private">خصوصی</option></select></label>
+              </div>
+              <div class="actions" id="sharing-actions">
+                <button class="quiet" type="button" id="duplicate" hidden>ساخت کپی</button>
+                <button class="quiet" type="button" id="delete-piece" hidden>حذف</button>
+                <button class="quiet" type="button" id="revoke-invite" hidden>لغو پیوند قبلی ویرایش</button>
+              </div>
+            </details>
+          </div>
+          <div class="actions save-bar">
+            <span id="save-state" aria-live="polite"></span>
+            <button type="submit">ذخیره</button>
+            <button type="button" id="publish-piece" hidden>انتشار</button>
+            <button class="quiet" type="button" id="cancel">انصراف</button>
+          </div>
+        </form>
+      </section>

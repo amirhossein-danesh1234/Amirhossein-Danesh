@@ -6,6 +6,19 @@ export function bindPerformance() {
   const metronome = byId<HTMLButtonElement>('metronome');
   const speed = byId<HTMLInputElement>('scroll-speed');
   const sheet = byId('score');
+  const settings = byId('performance-settings');
+  const trigger = byId<HTMLButtonElement>('settings-trigger');
+  function toggleSettings(open: boolean) {
+    settings.hidden = !open;
+    trigger.setAttribute('aria-expanded', String(open));
+  }
+  trigger.addEventListener('click', () => toggleSettings(settings.hidden));
+  window.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape' || settings.hidden) return;
+    event.preventDefault();
+    toggleSettings(false);
+    trigger.focus();
+  });
   let playing = false;
   let last = 0;
   let position = 0;
@@ -84,16 +97,17 @@ export function bindPerformance() {
   });
 
   function enter(value: boolean) {
+    toggleSettings(false);
     document.body.classList.toggle('performance', value);
     perform.setAttribute('aria-pressed', String(value));
-    perform.textContent = value ? 'بازگشت به نمایش عادی' : 'حالت اجرا';
+    perform.textContent = value ? 'پایان اجرا' : 'حالت اجرا';
     if (value) byId('piece').scrollIntoView();
     else toggleScroll(false);
   }
   perform.addEventListener('click', () => enter(!document.body.classList.contains('performance')));
   window.addEventListener('keydown', (event) => {
-    if (!document.body.classList.contains('performance') || event.altKey || event.ctrlKey || event.metaKey ||
-        (event.target as HTMLElement).closest('button,input,textarea,select,[contenteditable]')) return;
+    if (event.defaultPrevented || !document.body.classList.contains('performance') || event.altKey || event.ctrlKey || event.metaKey ||
+        (event.key !== 'Escape' && (event.target as HTMLElement).closest('button,input,textarea,select,[contenteditable]'))) return;
     if (event.key === 'Escape') enter(false);
     if (event.code === 'Space') { event.preventDefault(); toggleScroll(!playing); }
     if (event.key.toLowerCase() === 'm') metronome.click();

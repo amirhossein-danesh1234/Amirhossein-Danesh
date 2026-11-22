@@ -1,0 +1,21 @@
+---
+import { pitchNames } from '../music/notation';
+---
+<div class="performance-toolbar" id="performance-controls">
+  <div class="actions toolbar-main" role="group" aria-label="کنترل‌های اجرا">
+    <label class="key-control">گام <select dir="ltr" id="key">{pitchNames.map((name, i) => <option value={i}>{name}</option>)}</select></label>
+    <button type="button" id="perform" aria-pressed="false">حالت اجرا</button>
+    <button class="quiet performance-only" type="button" id="auto-scroll" aria-pressed="false">پیمایش خودکار</button>
+    <button class="quiet performance-only" type="button" id="metronome" aria-pressed="false">مترونوم</button>
+    <button class="quiet" type="button" id="settings-trigger" aria-expanded="false" aria-controls="performance-settings">تنظیمات</button>
+  </div>
+  <div id="performance-settings" class="performance-settings" hidden>
+    <label for="chords"><input type="checkbox" id="chords" checked /> نمایش آکوردها</label>
+    <button class="quiet" type="button" id="reset-key" hidden>بازگشت به گام اصلی</button>
+    <label>اندازهٔ متن <input id="lyric-size" type="range" min="90" max="180" value="100" /></label>
+    <label>اندازهٔ آکورد <input id="chord-size" type="range" min="80" max="180" value="100" /></label>
+    <label>سرعت پیمایش <input id="scroll-speed" type="range" min="8" max="120" value="27" /></label>
+    <label>سرعت مترونوم (BPM) <input id="metronome-bpm" type="number" min="20" max="300" value="90" /></label>
+    <label>جهت انتقال <select id="shift-direction"><option value="nearest">نزدیک‌ترین</option><option value="up">بالا</option><option value="down">پایین</option></select></label>
+  </div>
+</div>

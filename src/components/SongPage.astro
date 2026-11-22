@@ -1,0 +1,39 @@
+---
+import PerformanceToolbar from './PerformanceToolbar.astro';
+const { admin = false } = Astro.props as { admin?: boolean };
+---
+<details id="song-preview" class="song-preview" open={!admin} data-admin={admin} hidden={admin}>
+  <summary hidden={!admin}>پیش‌نمایش زنده</summary>
+  <section id="piece" aria-labelledby="piece-title" hidden>
+    <a class="back-library" href="/" hidden={admin}>بازگشت به قطعه‌ها</a>
+    <header class="piece-head">
+      <div>
+        <h1 id="piece-title"></h1>
+        <p id="piece-artist"></p>
+        <p id="piece-key"></p>
+        <details class="song-details" id="song-details" hidden><summary>مشخصات بیشتر</summary><p id="piece-details"></p></details>
+      </div>
+      <details class="song-actions" id="song-actions" hidden><summary>اشتراک‌گذاری</summary>
+        <div class="actions">
+          <button class="quiet" type="button" id="share" hidden>لینک مشاهده</button>
+          <button class="quiet" type="button" id="invite" hidden>لینک ویرایش</button>
+          <button class="quiet" type="button" id="edit" hidden>ویرایش قطعه</button>
+        </div>
+      </details>
+    </header>
+    <PerformanceToolbar />
+    <article class="sheet" aria-label="متن و آکورد">
+      <div id="score"></div>
+    </article>
+    <div class="song-extras">
+      <details id="recordings-panel" hidden>
+        <summary>اجراهای ضبط‌شده</summary>
+        <div id="video"></div>
+      </details>
+      <details id="piano-card" hidden>
+        <summary>آکورد روی پیانو</summary>
+        <div id="piano"></div>
+      </details>
+    </div>
+  </section>
+</details>

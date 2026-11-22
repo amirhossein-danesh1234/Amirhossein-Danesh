@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createHash, createHmac, scryptSync } from 'node:crypto';
 import { once } from 'node:events';
-import { readFile, mkdtemp, rm } from 'node:fs/promises';
+import { readFile, mkdir, mkdtemp, rm } from 'node:fs/promises';
 import { createServer, request } from 'node:http';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
@@ -17,6 +17,22 @@ for (const invalid of ['api', '../music', 'https://host/path', '']) assert.equal
 assert.equal(chord('Am/C', 2).label, 'Bm/D');
 assert.equal(chord('C/E/invalid'), null);
 assert.equal(noteSequence('B4  C5', 1), 'C5  C♯5');
+
+const captures = process.env.HAMNAVA_SCREENSHOTS;
+if (captures) await mkdir(captures, { recursive: true });
+async function capture(page, name) {
+  if (!captures) return;
+  const viewport = page.viewportSize();
+  for (const width of [390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.evaluate(() => document.fonts.ready);
+    if (process.env.HAMNAVA_ENFORCE_LAYOUT) {
+      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), width, name + ' overflow');
+    }
+    await page.screenshot({ path: join(captures, name + '-' + width + '.png') });
+  }
+  if (viewport) await page.setViewportSize(viewport);
+}
 
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.HAMNAVA_PLAYWRIGHT || 'playwright');
@@ -87,17 +103,38 @@ try {
   await admin.locator('#admin-username').fill('qa');
   await admin.locator('#admin-password').fill(password);
   await admin.locator('#unlock button').click();
+  await admin.locator('#new-piece').waitFor();
+  await capture(admin, 'admin-list');
   await admin.locator('#new-piece').click();
+  await admin.locator('#metadata-section summary').click();
   await admin.locator('#title').fill('رهایم کن');
   assert.equal(await admin.locator('#slug').inputValue(), 'رهایم-کن');
-  await admin.locator('#visual-score textarea').fill('متن نمونه');
-  await admin.locator('#visual-score button').first().click();
+  await admin.locator('#metadata-section summary').click();
+  await admin.locator('#visual-lyrics').pressSequentially('متن نمونه');
+  await admin.locator('#visual-lyrics').evaluate((field) => {
+    field.setSelectionRange(4, 9);
+    field.dispatchEvent(new Event('select'));
+  });
+  await admin.locator('#toggle-chord-tool').click();
   await admin.locator('#chord-input').fill('Am');
   await admin.locator('#add-intro').click();
+  await admin.locator('#chord-input').fill('G');
+  await admin.locator('#add-chord').click();
+  await admin.locator('#toggle-chord-tool').click();
+  assert.equal(await admin.locator('#visual-lyrics').inputValue(), 'متن نمونه');
+  assert.equal(await admin.locator('#visual-score button').count(), 0);
+  await admin.locator('#editor').evaluate((node) => node.scrollIntoView());
+  await capture(admin, 'admin-visual');
   await admin.locator('#raw-mode').click();
-  assert.equal(await admin.locator('#score-input').inputValue(), '[Am]     متن نمونه');
+  assert.equal(await admin.locator('#score-input').inputValue(), '[Am]     متن [G]نمونه');
   const score = '[Am]من آغاز\n[Am]     من بعد\nمن [Am]باید ولی [G]دلم\n[Am]   [G]     من سوم\n[C] [G]';
   await admin.locator('#score-input').fill(score);
+  await admin.locator('#visual-mode').click();
+  assert.equal(await admin.locator('#visual-lyrics').inputValue(), 'من آغاز\nمن بعد\nمن باید ولی دلم\nمن سوم\n ');
+  await admin.locator('#raw-mode').click();
+  assert.equal(await admin.locator('#score-input').inputValue(), score);
+  await capture(admin, 'admin-raw');
+  await admin.locator('#metadata-section summary').click();
   await admin.locator('#original-key').selectOption('9');
   await admin.locator('#mode').selectOption('minor');
   await admin.locator('#metadata-fields').evaluate((el) => { el.parentElement.open = true; });
@@ -117,10 +154,14 @@ try {
   }, { path, method, data });
   const fetched = await callAdmin('/api/pieces/' + id, 'GET');
   assert.equal(fetched.status, 200, JSON.stringify(fetched.body));
-  const body = fetched.body;
+  let body = fetched.body;
   assert.equal(body.score, score);
   const duplicate = await callAdmin('/api/owner/pieces', 'POST', body);
   assert.equal(duplicate.status, 409);
+  await admin.locator('#publish-piece').click();
+  await admin.locator('#notice').getByText('قطعه ذخیره شد.').waitFor();
+  body = (await callAdmin('/api/pieces/' + id, 'GET')).body;
+  assert.equal(body.visibility, 'published');
   const upload = await admin.evaluate(async () => {
     const response = await fetch('/api/owner/upload', {
       method: 'POST', headers: { 'Content-Type': 'audio/wav' }, body: 'RIFF1234WAVE5678',
@@ -141,12 +182,36 @@ try {
   assert.equal((await (await fetch(origins.music + '/api/pieces/' + id)).json()).takes.length, 1);
   assert.equal((await callAdmin(url, 'GET')).status, 200);
 
+  if (captures) {
+    await admin.reload();
+    await admin.locator('#visual-lyrics').waitFor();
+    await admin.locator('#media-section > summary').click();
+    assert.equal(await admin.locator('.recording-item:not([open])').count(), 2);
+    await admin.locator('#media-section').evaluate((section) => section.scrollIntoView());
+    await capture(admin, 'admin-media');
+    await admin.locator('.recording-item > summary').first().click();
+    assert.equal(await admin.locator('.recording-item[open]').count(), 1);
+    await admin.locator('#song-preview > summary').click();
+    await admin.locator('#song-preview').evaluate((section) => section.scrollIntoView());
+    await capture(admin, 'admin-preview');
+  }
   const mobile = await browser.newPage({ viewport: { width: 390, height: 800 }, isMobile: true });
   mobile.on('pageerror', (error) => errors.push(error.message));
+  if (captures) {
+    await mobile.goto(origins.music);
+    await mobile.locator('#library').waitFor();
+    await mobile.locator('.song-row').first().waitFor();
+    assert.equal(await mobile.locator('#piece').isVisible(), false);
+    await mobile.locator('#library-search').fill('رهایم');
+    assert.equal(await mobile.locator('.song-row').count(), 1);
+    await mobile.locator('#library-search').fill('');
+    await capture(mobile, 'library');
+  }
   await mobile.goto(origins.music + '/' + encodeURIComponent(saved.slug));
   await mobile.locator('#piece-title').waitFor();
   await mobile.reload();
   await mobile.locator('#piece-title').waitFor();
+  await capture(mobile, 'song');
   const rows = mobile.locator('#score .lyric');
   assert.equal(await rows.nth(0).locator('.chord-start:not(.intro)').count(), 1);
   assert.equal(await rows.nth(1).locator('.intro').count(), 1);
@@ -159,11 +224,22 @@ try {
   await mobile.locator('#key').selectOption('2');
   assert.match(await mobile.locator('#piece-key').innerText(), /لا مینور.*ر مینور.*6\/8/);
   assert.deepEqual(await rows.nth(3).locator('.intro button').allTextContents(), ['Dm','C']);
+  assert.equal(await mobile.locator('#performance-settings').isVisible(), false);
+  await mobile.locator('#settings-trigger').click();
   await mobile.locator('#chords').uncheck();
   assert.equal(await rows.nth(1).textContent(), 'من بعد');
   assert.equal(await mobile.evaluate(() => document.documentElement.scrollWidth), 390);
+  await mobile.locator('#chords').check();
+  await mobile.locator('#settings-trigger').click();
   await mobile.locator('#perform').click();
   assert(await mobile.locator('body.performance').count());
+  await capture(mobile, 'performance');
+  await mobile.locator('#settings-trigger').click();
+  await mobile.keyboard.press('Escape');
+  assert.equal(await mobile.locator('#performance-settings').isVisible(), false);
+  assert(await mobile.locator('body.performance').count());
+  await mobile.keyboard.press('Escape');
+  assert.equal(await mobile.locator('body.performance').count(), 0);
 
   const alias = await callAdmin('/api/pieces/' + id, 'PUT', { ...saved, slug:'رهایم-کن-تازه', visibility:'unlisted' });
   assert.equal(alias.status, 200);

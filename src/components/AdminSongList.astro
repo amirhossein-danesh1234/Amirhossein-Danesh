@@ -1,0 +1,16 @@
+<section class="owner" id="owner" aria-labelledby="owner-heading" hidden>
+        <h1 id="owner-heading">مدیریت قطعه‌ها</h1>
+        <form id="unlock" class="actions" method="post">
+          <label>نام کاربری <input id="admin-username" name="username" type="text" required maxlength="100" autocomplete="username" dir="ltr" /></label>
+          <label>رمز عبور <input id="admin-password" name="password" type="password" required maxlength="128" autocomplete="current-password" dir="ltr" /></label>
+          <button type="submit">ورود</button>
+        </form>
+        <div id="owner-actions" hidden>
+          <div class="actions">
+            <button id="new-piece" type="button">قطعهٔ تازه</button>
+            <button class="quiet" id="logout" type="button">خروج</button>
+          </div>
+          <label class="library-search">جست‌وجوی قطعه <input id="owner-search" type="search" placeholder="نام یا نشانی قطعه" /></label>
+          <div id="owner-list" class="song-list"></div>
+        </div>
+      </section>
