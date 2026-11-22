@@ -84,7 +84,8 @@ input[type="checkbox"] { accent-color: var(--green); inline-size: 1.1rem; block-
 .fields label { display: grid; gap: .26rem; }
 .fields label small { color: var(--muted); }
 input:not([type="checkbox"]), select, textarea { border: 1px solid #a3b2a7; border-radius: 8px; color: #172f27; background: #fff; padding: .4rem .55rem; width: 100%; }
-#owner-key { width: min(100%, 15rem); }
+#unlock { align-items: end; }
+#unlock label { display: grid; gap: .25rem; flex: 0 1 14rem; }
 textarea { resize: vertical; margin-block-start: .35rem; }
 details { margin: .5rem 0 1rem; }
 summary { cursor: pointer; color: var(--green); }

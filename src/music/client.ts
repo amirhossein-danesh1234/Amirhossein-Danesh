@@ -26,12 +26,13 @@ const mode = element<HTMLSelectElement>('mode');
 const videoUrl = element<HTMLInputElement>('video-url');
 const listed = element<HTMLInputElement>('listed');
 const scoreInput = element<HTMLTextAreaElement>('score-input');
-const ownerKeyInput = element<HTMLInputElement>('owner-key');
+const usernameInput = element<HTMLInputElement>('admin-username');
+const passwordInput = element<HTMLInputElement>('admin-password');
 const admin = document.body.dataset.musicMode === 'admin';
 const selectedId = new URL(location.href).searchParams.get('piece') || demo.id;
 const editKey = admin ? '' : new URLSearchParams(location.hash.slice(1)).get('edit') ?? '';
 const editingAvailable = window.isSecureContext;
-let ownerKey = admin && editingAvailable ? sessionStorage.getItem('hamnava-owner-key') ?? '' : '';
+let ownerAuthenticated = false;
 let piece = demo;
 let selectedChord = '';
 let creating = false;
@@ -59,7 +60,7 @@ async function api<T>(path: string, options: { method?: string; key?: string; da
     throw new Error('ارتباط با سرور برقرار نشد.');
   }
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data.error || 'درخواست انجام نشد.');
+  if (!response.ok) throw Object.assign(new Error(data.error || 'درخواست انجام نشد.'), { status: response.status });
   return data as T;
 }
 
@@ -215,10 +216,10 @@ function renderVideo() {
 
 function renderPermissions() {
   const realPiece = piece.id !== demo.id;
-  element('invite').hidden = !realPiece || !ownerKey;
-  element('edit').hidden = !editingAvailable || !realPiece || (!ownerKey && !editKey);
-  element('unlock').hidden = Boolean(ownerKey);
-  element('owner-actions').hidden = !ownerKey;
+  element('invite').hidden = !realPiece || !ownerAuthenticated;
+  element('edit').hidden = !editingAvailable || !realPiece || (!ownerAuthenticated && !editKey);
+  element('unlock').hidden = Boolean(ownerAuthenticated);
+  element('owner-actions').hidden = !ownerAuthenticated;
 }
 
 function showPiece(next: Piece) {
@@ -238,8 +239,8 @@ function startEditor(isNew: boolean) {
   creating = isNew;
   const editable = isNew ? { ...demo, title: '', artist: '', root: 0, mode: 'major', score: '' } : piece;
   element('editor-heading').textContent = isNew ? 'قطعهٔ تازه' : 'ویرایش قطعه';
-  element('owner-fields').hidden = !ownerKey;
-  element('score-tools').hidden = !ownerKey;
+  element('owner-fields').hidden = !ownerAuthenticated;
+  element('score-tools').hidden = !ownerAuthenticated;
   title.value = editable.title;
   artist.value = editable.artist;
   originalKey.value = String(editable.root);
@@ -248,7 +249,7 @@ function startEditor(isNew: boolean) {
   listed.checked = editable.listed;
   scoreInput.value = editable.score;
   editor.hidden = false;
-  (ownerKey ? title : scoreInput).focus();
+  (ownerAuthenticated ? title : scoreInput).focus();
 }
 
 async function copy(url: URL) {
@@ -262,10 +263,9 @@ async function copy(url: URL) {
 
 const message = (error: unknown) => error instanceof Error ? error.message : 'درخواست انجام نشد.';
 
-async function loadOwner(credential: string) {
-  const pieces = await api<Pick<Piece, 'id' | 'title'>[]>('owner/pieces', { key: credential });
-  ownerKey = credential;
-  sessionStorage.setItem('hamnava-owner-key', credential);
+async function loadOwner() {
+  const pieces = await api<Pick<Piece, 'id' | 'title'>[]>('owner/pieces');
+  ownerAuthenticated = true;
   renderList('owner-list', pieces);
   renderPermissions();
 }
@@ -278,23 +278,39 @@ async function loadLibrary() {
 
 element<HTMLFormElement>('unlock').addEventListener('submit', async (event) => {
   event.preventDefault();
+  const form = event.currentTarget as HTMLFormElement;
+  const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+  if (button.disabled) return;
+  button.disabled = true;
   try {
-    await loadOwner(ownerKeyInput.value.trim());
-    ownerKeyInput.value = '';
+    await api('owner/login', {
+      method: 'POST',
+      data: { username: usernameInput.value.trim(), password: passwordInput.value },
+    });
+    await loadOwner();
     notice('');
     if (!(await loadAdminPiece())) element('new-piece').focus();
   } catch (error) {
     notice(message(error), true);
+  } finally {
+    passwordInput.value = '';
+    button.disabled = false;
   }
 });
-element('logout').addEventListener('click', () => {
-  ownerKey = '';
-  sessionStorage.removeItem('hamnava-owner-key');
+element('logout').addEventListener('click', async () => {
+  try {
+    await api('owner/logout', { method: 'POST' });
+  } catch (error) {
+    notice(message(error), true);
+    return;
+  }
+  ownerAuthenticated = false;
   element('owner-list').replaceChildren();
   editor.hidden = true;
   element('piece').hidden = true;
+  notice('');
   renderPermissions();
-  ownerKeyInput.focus();
+  usernameInput.focus();
 });
 chords.addEventListener('change', renderScore);
 key.addEventListener('change', renderScore);
@@ -315,7 +331,7 @@ score.addEventListener('click', (event) => {
 element('share').addEventListener('click', () => void copy(pieceUrl(piece.id)));
 element('invite').addEventListener('click', async () => {
   try {
-    const { key: token } = await api<{ key: string }>('owner/pieces/' + piece.id + '/invite', { key: ownerKey });
+    const { key: token } = await api<{ key: string }>('owner/pieces/' + piece.id + '/invite');
     const url = pieceUrl(piece.id);
     url.hash = 'edit=' + token;
     await copy(url);
@@ -335,7 +351,7 @@ element<HTMLFormElement>('edit-form').addEventListener('submit', async (event) =
   const isNew = creating;
   const submit = element('edit-form').querySelector<HTMLButtonElement>('button[type="submit"]')!;
   const data: Record<string, unknown> = { score: scoreInput.value, revision: piece.revision };
-  if (ownerKey) Object.assign(data, {
+  if (ownerAuthenticated) Object.assign(data, {
     title: title.value.trim(),
     artist: artist.value.trim(),
     root: Number(originalKey.value),
@@ -346,7 +362,7 @@ element<HTMLFormElement>('edit-form').addEventListener('submit', async (event) =
   submit.disabled = saving = true;
   try {
     const next = await api<Piece>(isNew ? 'owner/pieces' : 'pieces/' + piece.id, {
-      method: isNew ? 'POST' : 'PUT', key: ownerKey || editKey, data,
+      method: isNew ? 'POST' : 'PUT', key: editKey, data,
     });
     if (isNew) {
       location.assign(pieceUrl(next.id, true).href);
@@ -357,7 +373,7 @@ element<HTMLFormElement>('edit-form').addEventListener('submit', async (event) =
     editor.hidden = true;
     element('edit').focus();
     if (!admin) void loadLibrary().catch(() => {});
-    if (ownerKey) void loadOwner(ownerKey).catch(() => {});
+    if (ownerAuthenticated) void loadOwner().catch(() => {});
   } catch (error) {
     notice(message(error), true);
     noticeElementIntoView();
@@ -416,19 +432,11 @@ async function initialize() {
       return;
     }
     element('owner').hidden = false;
-    if (ownerKey) {
-      try {
-        await loadOwner(ownerKey);
-      } catch (error) {
-        ownerKey = '';
-        sessionStorage.removeItem('hamnava-owner-key');
-        renderPermissions();
-        notice(message(error), true);
-        return;
-      }
-      try {
-        await loadAdminPiece();
-      } catch (error) {
+    try {
+      await loadOwner();
+      await loadAdminPiece();
+    } catch (error) {
+      if (!(error instanceof Error && 'status' in error && error.status === 401)) {
         notice(message(error), true);
       }
     }

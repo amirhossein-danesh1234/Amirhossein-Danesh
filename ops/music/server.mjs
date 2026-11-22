@@ -1,13 +1,27 @@
-import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
+import { createHmac, randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
 import { createServer } from 'node:http';
 import { DatabaseSync } from 'node:sqlite';
 import { resolveVideo } from './video.mjs';
 
-const { HAMNAVA_OWNER_KEY: owner, HAMNAVA_DATABASE: database } = process.env;
+const {
+  HAMNAVA_OWNER_KEY: owner,
+  HAMNAVA_DATABASE: database,
+  HAMNAVA_ADMIN_USERNAME: adminUsername,
+  HAMNAVA_ADMIN_PASSWORD_HASH: passwordHash,
+} = process.env;
 const publicSite = new URL(process.env.HAMNAVA_ORIGIN ?? 'https://music.amirhossein-danesh.ir');
 const adminSite = new URL(process.env.HAMNAVA_ADMIN_ORIGIN ?? 'https://music-admin.amirhossein-danesh.ir');
 const keyPattern = /^[\w-]{43}$/;
 if (!owner || !keyPattern.test(owner) || !database) throw new Error('Hamnava requires an owner key and database path.');
+
+const verifier = /^([a-f0-9]{32}):([a-f0-9]{64})$/.exec(passwordHash ?? '');
+if (!adminUsername || !verifier) throw new Error('Hamnava requires an admin username and password verifier.');
+const passwordSalt = Buffer.from(verifier[1], 'hex');
+const passwordDigest = Buffer.from(verifier[2], 'hex');
+const sessionCookie = '__Host-hamnava-session';
+const sessionSeconds = 8 * 60 * 60;
+let failedLogins = 0;
+let failureWindow = 0;
 
 const db = new DatabaseSync(database);
 db.exec(`
@@ -65,6 +79,51 @@ async function readJson(req) {
   }
 }
 
+function sessionSignature(payload) {
+  return createHmac('sha256', owner)
+    .update(JSON.stringify(['admin-session', adminUsername, passwordHash, payload]))
+    .digest('base64url');
+}
+
+function hasSession(cookies = '') {
+  const token = cookies.split(';').map((cookie) => cookie.trim())
+    .find((cookie) => cookie.startsWith(sessionCookie + '='))?.slice(sessionCookie.length + 1);
+  const match = /^(\d{10})\.([\w-]{22})\.([\w-]{43})$/.exec(token ?? '');
+  if (!match || Number(match[1]) <= Math.floor(Date.now() / 1000)) return false;
+  return matches(match[3], sessionSignature(match[1] + '.' + match[2]));
+}
+
+function setSession(res, token, age) {
+  res.setHeader('Set-Cookie', `${sessionCookie}=${token}; Path=/; Max-Age=${age}; HttpOnly; Secure; SameSite=Strict`);
+}
+
+async function login(req, res) {
+  const { username, password } = await readJson(req);
+  if (typeof username !== 'string' || username.length > 100 ||
+      typeof password !== 'string' || !password || password.length > 128) {
+    throw clientError(400, 'نام کاربری و رمز عبور را وارد کن.');
+  }
+  const now = Date.now();
+  if (now >= failureWindow) {
+    failedLogins = 0;
+    failureWindow = now + 60_000;
+  }
+  if (failedLogins >= 12) {
+    res.setHeader('Retry-After', String(Math.ceil((failureWindow - now) / 1000)));
+    throw clientError(429, 'تلاش‌های ورود زیاد بود. کمی بعد دوباره امتحان کن.');
+  }
+  const digest = scryptSync(password, passwordSalt, 32, { N: 32768, r: 8, p: 3, maxmem: 64 * 1024 * 1024 });
+  if (!timingSafeEqual(digest, passwordDigest) || username !== adminUsername) {
+    failedLogins++;
+    throw clientError(401, 'نام کاربری یا رمز عبور درست نیست.');
+  }
+  failedLogins = 0;
+  const expires = Math.floor(now / 1000) + sessionSeconds;
+  const payload = expires + '.' + randomBytes(16).toString('base64url');
+  setSession(res, payload + '.' + sessionSignature(payload), sessionSeconds);
+  return send(res, 200, {});
+}
+
 function scoreValue(input) {
   if (typeof input !== 'string' || input.length > 16_000) {
     throw clientError(400, 'متن قطعه باید حداکثر ۱۶ هزار نویسه باشد.');
@@ -92,15 +151,21 @@ async function handle(req, res) {
   const site = isAdminHost ? adminSite : publicSite;
   const path = new URL(req.url, site).pathname;
   const credential = headers.authorization?.replace(/^Bearer /, '') ?? '';
-  const isOwner = isAdminHost && matches(credential, owner);
+  const isOwner = isAdminHost && hasSession(headers.cookie);
   if (!isAdminHost && path.startsWith('/api/owner/')) throw clientError(404, 'صفحه پیدا نشد.');
   if (method === 'POST' || method === 'PUT') {
     if (headers.origin !== site.origin) throw clientError(403, 'این درخواست باید از خود هم‌نوا ارسال شود.');
   }
 
+  if (path === '/api/owner/login' && method === 'POST') return login(req, res);
+  if (path === '/api/owner/logout' && method === 'POST') {
+    setSession(res, '', 0);
+    return send(res, 200, {});
+  }
+
   if (path === '/api/pieces' && method === 'GET') return send(res, 200, list.all());
   if (path === '/api/owner/pieces') {
-    if (!isOwner) throw clientError(401, 'کلید مدیریت معتبر نیست.');
+    if (!isOwner) throw clientError(401, 'برای ادامه وارد پنل شو.');
     if (method === 'GET') return send(res, 200, owned.all());
     if (method === 'POST') {
       const input = fields(await readJson(req));
@@ -111,7 +176,7 @@ async function handle(req, res) {
   }
   const invitation = /^\/api\/owner\/pieces\/([\w-]{24})\/invite$/.exec(path);
   if (invitation && method === 'GET') {
-    if (!isOwner) throw clientError(401, 'کلید مدیریت معتبر نیست.');
+    if (!isOwner) throw clientError(401, 'برای ادامه وارد پنل شو.');
     if (!get.get(invitation[1])) throw clientError(404, 'قطعه پیدا نشد.');
     return send(res, 200, { key: invite(invitation[1]) });
   }
@@ -123,6 +188,7 @@ async function handle(req, res) {
     if (!row) throw clientError(404, 'قطعه پیدا نشد.');
     if (method === 'GET') return send(res, 200, expose(row));
     const isGuest = !isAdminHost && matches(credential, invite(id));
+    if (isAdminHost && !isOwner) throw clientError(401, 'برای ادامه وارد پنل شو.');
     if (!isOwner && !isGuest) throw clientError(403, 'دسترسی ویرایش معتبر نیست.');
     const input = await readJson(req);
     if (!Number.isSafeInteger(input.revision)) throw clientError(400, 'نسخهٔ قطعه معتبر نیست.');
