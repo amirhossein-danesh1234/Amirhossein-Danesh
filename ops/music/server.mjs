@@ -79,7 +79,7 @@ function assignSlug(id, value) {
   setSlug.run(slug, id);
 }
 const get = db.prepare('SELECT * FROM pieces WHERE id = ?');
-const list = db.prepare("SELECT id, title, slug FROM pieces WHERE visibility = 'published' ORDER BY rowid DESC");
+const list = db.prepare("SELECT id, title, slug, artist, root, mode, metadata FROM pieces WHERE visibility = 'published' ORDER BY rowid DESC");
 const owned = db.prepare('SELECT id, title, slug, visibility FROM pieces ORDER BY rowid DESC');
 const insert = db.prepare(`
   INSERT INTO pieces (id, title, artist, root, mode, score, video, listed, revision)
@@ -275,7 +275,12 @@ async function handle(req, res) {
     return send(res, 200, {});
   }
 
-  if (path === '/api/pieces' && method === 'GET') return send(res, 200, list.all());
+  if (path === '/api/pieces' && method === 'GET') {
+    return send(res, 200, list.all().map(({ metadata, ...item }) => {
+      const { instrument, timeSignature, rhythm } = JSON.parse(metadata);
+      return { ...item, metadata: { instrument, timeSignature, rhythm } };
+    }));
+  }
   if (path === '/api/owner/pieces') {
     if (!isOwner) throw clientError(401, 'برای ادامه وارد پنل شو.');
     if (method === 'GET') return send(res, 200, owned.all());
