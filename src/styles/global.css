@@ -1,5 +1,5 @@
 @import '@fontsource-variable/manrope';
-@import '@fontsource-variable/vazirmatn';
+@import './peyda.css';
 
 :root {
   --color-canvas: #f3efe7;
@@ -24,7 +24,7 @@
   --color-key-phrase-green: #1b6846;
   --shadow-profile: 0 6px 22px rgba(23, 50, 77, 0.07);
   --font-latin: "Century Schoolbook", Georgia, "Times New Roman", serif;
-  --font-persian: "Calibri", "Vazirmatn Variable", "Vazirmatn", Tahoma, sans-serif;
+  --font-persian: "Peyda", Tahoma, sans-serif;
   --text-xs: .78rem; --text-sm: .9rem; --text-base: 1rem; --text-md: 1.08rem; --text-lg: 1.25rem; --text-xl: 1.5rem; --text-2xl: 2rem; --text-3xl: clamp(2.2rem, 5vw, 3.1rem);
   --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px; --space-12: 48px; --space-16: 64px;
   --radius-sm: 7px; --radius-md: 10px; --radius-lg: 14px; --radius-pill: 999px;

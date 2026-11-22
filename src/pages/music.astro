@@ -1,0 +1,125 @@
+---
+import '../styles/peyda.css';
+import '../music/music.css';
+import { pitchNames } from '../music/notation';
+---
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="دفتر اجرای امیرحسین دانش برای پیانو، تار، سه‌تار و هم‌خوانی." />
+    <title>هم‌نوا | دفتر تمرین و اجرا</title>
+    <link rel="canonical" href="https://music.amirhossein-danesh.ir/" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <header class="top">
+      <nav class="wrap top-inner" aria-label="ناوبری اصلی">
+        <a class="brand" href="/"><span class="brand-icon" aria-hidden="true">♫</span> هم‌نوا</a>
+        <a class="profile" href="https://amirhossein-danesh.ir/fa/">امیرحسین دانش</a>
+        <button class="quiet" id="manage" type="button">مدیریت قطعه‌ها</button>
+      </nav>
+    </header>
+    <main class="wrap">
+      <section class="hero">
+        <div>
+          <div class="instruments">پیانو <span>·</span> تار <span>·</span> سه‌تار</div>
+          <h1>دفتر تمرین و هم‌خوانی</h1>
+          <p>متن، آکورد، ملودی و ویدیوی اجرا در یک صفحه.</p>
+        </div>
+        <div class="hero-keys" aria-hidden="true">
+          {Array.from({ length: 9 }, (_, index) => <i class:list={[{ raised: [0, 1, 3, 4, 5, 7].includes(index) }]} />)}
+        </div>
+      </section>
+      <div id="notice" role="status" hidden></div>
+      <section class="card library" id="library" aria-labelledby="library-heading" hidden>
+        <h2 id="library-heading">قطعه‌ها</h2>
+        <div id="piece-list" class="piece-list"></div>
+      </section>
+      <section class="card owner" id="owner" aria-labelledby="owner-heading" hidden>
+        <h2 id="owner-heading">مدیریت قطعه‌ها</h2>
+        <form id="unlock" class="actions">
+          <label for="owner-key">کلید مدیریت</label>
+          <input id="owner-key" type="password" required autocomplete="off" dir="ltr" />
+          <button type="submit">ورود</button>
+        </form>
+        <div id="owner-actions" hidden>
+          <div class="actions">
+            <button id="new-piece" type="button">قطعهٔ تازه</button>
+            <button class="quiet" id="logout" type="button">خروج</button>
+          </div>
+          <div id="owner-list" class="piece-list"></div>
+        </div>
+      </section>
+
+      <section id="piece" aria-labelledby="piece-title" hidden>
+        <header class="piece-head">
+          <div>
+            <h2 id="piece-title"></h2>
+            <p id="piece-artist"></p>
+          </div>
+          <div class="actions">
+            <button class="quiet" type="button" id="share" hidden>لینک مشاهده</button>
+            <button class="quiet" type="button" id="invite" hidden>لینک ویرایش</button>
+            <button type="button" id="edit" hidden>ویرایش قطعه</button>
+          </div>
+        </header>
+        <div class="stage">
+          <article class="card sheet" aria-labelledby="sheet-heading">
+            <div class="card-head">
+              <div><span class="lane">لاین ۱</span><h3 id="sheet-heading">متن و نت اجرا</h3></div>
+              <div class="actions settings">
+                <label for="chords"><input type="checkbox" id="chords" checked /> آکوردها</label>
+                <label for="key">گام <select dir="ltr" id="key">{pitchNames.map((name, i) => <option value={i}>{name}</option>)}</select></label>
+                <button class="quiet" type="button" id="reset-key" hidden>گام اصلی</button>
+              </div>
+            </div>
+            <div id="score"></div>
+          </article>
+          <div class="side">
+            <aside class="card video-card" aria-labelledby="video-heading">
+              <span class="lane">لاین ۲</span>
+              <h3 id="video-heading">ویدیوی اجرا</h3>
+              <div id="video"></div>
+            </aside>
+            <aside class="card piano-card" id="piano-card" aria-labelledby="piano-heading">
+              <h3 id="piano-heading">آکورد روی پیانو</h3>
+              <div id="piano"></div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section id="editor" class="card editor" aria-labelledby="editor-heading" hidden>
+        <h2 id="editor-heading">ویرایش قطعه</h2>
+        <form id="edit-form">
+          <div class="fields" id="owner-fields">
+            <label>نام قطعه <input id="title" maxlength="100" /></label>
+            <label>خواننده یا توضیح کوتاه <input id="artist" maxlength="120" /></label>
+            <label>گام اصلی <select id="original-key" dir="ltr">{pitchNames.map((name, i) => <option value={i}>{name}</option>)}</select></label>
+            <label>نوع گام <select id="mode"><option value="major">ماژور</option><option value="minor">مینور</option></select></label>
+            <label class="wide">پیوند ویدیوی اجرا <input id="video-url" type="url" maxlength="2048" dir="ltr" placeholder="https://…" /><small>پیوند مستقیم MP4 یا WebM، یوتیوب یا آپارات</small></label>
+            <label class="wide check"><input id="listed" type="checkbox" /> نمایش قطعه در فهرست عمومی</label>
+          </div>
+          <label for="score-input">متن، آکورد و نشانه‌های اجرا</label>
+          <textarea id="score-input" rows="10" maxlength="16000" placeholder="متن ترانه را سطر به سطر بنویسید." aria-describedby="score-format"></textarea>
+          <details id="score-format">
+            <summary>روش نوشتن آکورد، مکث و ملودی</summary>
+            <p>آکورد را درست پیش از واژهٔ مورد نظر بین کروشه بگذار، مثل <bdi>[Am]</bdi> یا <bdi>[G/B]</bdi>. برای عنوان بخش، سطر را با <bdi>#</bdi> شروع کن.</p>
+            <p>برای مکث، سطر را با <bdi>!</bdi> شروع کن، مثل «! ۲ ضرب مکث». برای بخش بی‌کلام از <bdi>~</bdi> استفاده کن و نت‌ها را بعد از <bdi>|</bdi> بنویس، مثل <bdi>~ سه‌تار | A4 C5 E5</bdi>.</p>
+          </details>
+          <div class="actions">
+            <button type="submit">ذخیره</button>
+            <button class="quiet" type="button" id="cancel">انصراف</button>
+          </div>
+        </form>
+      </section>
+    </main>
+    <footer class="wrap footer">هم‌نوا · دفتر موسیقی امیرحسین دانش</footer>
+    <noscript>برای نمایش قطعه‌ها و تغییر آکوردها، جاوااسکریپت را فعال کنید.</noscript>
+    <script>
+      import '../music/client';
+    </script>
+  </body>
+</html>

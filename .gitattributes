@@ -1,0 +1,4 @@
+ops/music/*.sh text eol=lf
+ops/music/*.mjs text eol=lf
+ops/music/*.service text eol=lf
+ops/music/*.conf text eol=lf

@@ -1,6 +1,8 @@
 export type Project = { title: string; slug: string; description: string; role: string; year: string; status: string; categories: string[]; technologies: string[]; githubUrl: string; externalUrl: string; featured: boolean };
 
 export const projects: Project[] = [
+  { title: 'Kappa', slug: 'kappaut', description: 'A seminar registration site with online registration and in-person capacity management.', role: 'Design & Development', year: '', status: 'Active', categories: [], technologies: [], githubUrl: '', externalUrl: 'https://kappaut.ir/', featured: true },
+  { title: 'Hamnava', slug: 'hamnava', description: 'A group practice space for piano, tar, and setar with lyrics, transposable chords, and performance videos.', role: 'Design & Development', year: '', status: 'Active', categories: [], technologies: [], githubUrl: '', externalUrl: 'https://music.amirhossein-danesh.ir/', featured: true },
   { title: 'Baazargaan', slug: 'baazargaan', description: 'Startup in development. (Confidential)', role: '', year: '', status: '', categories: [], technologies: [], githubUrl: '', externalUrl: '', featured: true },
   { title: 'Team Management System', slug: 'team-management', description: 'I built this system to help a team plan its work and stay in sync.', role: 'Design & Development', year: '', status: '', categories: [], technologies: [], githubUrl: '', externalUrl: '', featured: true },
   { title: 'Personal Website', slug: 'personal-site', description: 'This is the site you’re on now, where I share my studies, work, projects, and interests.', role: 'Design & Development', year: '', status: 'Active', categories: [], technologies: [], githubUrl: '', externalUrl: '', featured: true },

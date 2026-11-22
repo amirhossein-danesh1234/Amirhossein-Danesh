@@ -18,13 +18,13 @@ Assert-Exit 'Build'
 Set-Content -LiteralPath (Join-Path $root 'dist/REVISION') -Value $revision -Encoding ascii
 $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 $archive = Join-Path $env:TEMP "amirhossein-danesh-$stamp.tar.gz"
-tar -czf $archive -C (Join-Path $root 'dist') .
+tar -czf $archive -C $root dist ops/music
 Assert-Exit 'Archive'
 scp $archive "${SshAlias}:/tmp/"
 Assert-Exit 'Upload'
 $remoteArchive = "/tmp/$(Split-Path $archive -Leaf)"
 $releasePath = "/var/www/amirhossein-danesh.ir/releases/$stamp"
-$remoteCommand = "set -eu; mkdir -p '$releasePath'; tar -xzf '$remoteArchive' -C '$releasePath'; chmod -R a+rX '$releasePath'; test -f '$releasePath/index.html'; ln -s '$releasePath' /var/www/amirhossein-danesh.ir/current.next; mv -Tf /var/www/amirhossein-danesh.ir/current.next /var/www/amirhossein-danesh.ir/current; rm -f '$remoteArchive'; curl -fsSI -H 'Host: amirhossein-danesh.ir' http://127.0.0.1/"
+$remoteCommand = "set -eu; mkdir '$releasePath'; tar -xzf '$remoteArchive' -C '$releasePath'; chmod -R a+rX '$releasePath'; bash '$releasePath/ops/music/activate.sh' '$releasePath' '$remoteArchive'"
 ssh $SshAlias $remoteCommand
 Assert-Exit 'Release activation'
 Remove-Item -LiteralPath $archive -Force

@@ -1,6 +1,8 @@
 import type { Project } from '../en/projects';
 
 export const projects: Project[] = [
+  { title: 'کاپا', slug: 'kappaut', description: 'سامانهٔ ثبت‌نام سمینارهای کاپا با مدیریت ظرفیت حضوری و ثبت‌نام آنلاین.', role: 'طراحی و توسعه', year: '', status: 'فعال', categories: [], technologies: [], githubUrl: '', externalUrl: 'https://kappaut.ir/', featured: true },
+  { title: 'هم‌نوا', slug: 'hamnava', description: 'فضای تمرین گروهی برای پیانو، تار و سه‌تار با متن ترانه، آکوردهای قابل تغییر گام و ویدیوهای اجرا.', role: 'طراحی و توسعه', year: '', status: 'فعال', categories: [], technologies: [], githubUrl: '', externalUrl: 'https://music.amirhossein-danesh.ir/', featured: true },
   { title: 'بازرگان', slug: 'baazargaan', description: 'استارتاپ در حال ساخت. (محرمانه)', role: '', year: '', status: '', categories: [], technologies: [], githubUrl: '', externalUrl: '', featured: true },
   { title: 'سامانهٔ مدیریت تیم', slug: 'team-management', description: 'این سامانه را برای برنامه‌ریزی کارها و هماهنگی اعضای تیم طراحی و توسعه دادم.', role: 'طراحی و توسعه', year: '', status: '', categories: [], technologies: [], githubUrl: '', externalUrl: '', featured: true },
   { title: 'وب‌سایت شخصی', slug: 'personal-site', description: 'همین وب‌سایت را ساخته‌ام تا مسیر تحصیلی، تجربه‌ها، پروژه‌ها و علایقم را با تو به اشتراک بگذارم.', role: 'طراحی و توسعه', year: '', status: 'فعال', categories: [], technologies: [], githubUrl: '', externalUrl: '', featured: true },
