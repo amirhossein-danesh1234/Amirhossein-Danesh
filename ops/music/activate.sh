@@ -59,8 +59,14 @@ systemctl restart hamnava.service
 curl -fsS --retry 5 --retry-connrefused http://127.0.0.1:3102/api/pieces >/dev/null
 systemctl reload nginx
 
-curl -fsS -H 'Host: amirhossein-danesh.ir' http://127.0.0.1/ >/dev/null
-curl -fsS -H 'Host: music.amirhossein-danesh.ir' http://127.0.0.1/ >/dev/null
-curl -fsS -H 'Host: music.amirhossein-danesh.ir' http://127.0.0.1/api/pieces >/dev/null
+check_origin() {
+  local host=$1 path=$2
+  echo "Checking $host$path on the origin"
+  curl -fsS --max-time 5 --retry 4 --retry-delay 1 --retry-all-errors --resolve "$host:80:127.0.0.1" "http://$host$path" >/dev/null
+}
+
+check_origin amirhossein-danesh.ir /
+check_origin music.amirhossein-danesh.ir /
+check_origin music.amirhossein-danesh.ir /api/pieces
 cat "$site/current/REVISION"
 rm -f "$archive"
