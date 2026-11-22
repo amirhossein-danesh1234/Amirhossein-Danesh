@@ -29,7 +29,8 @@ const scoreInput = element<HTMLTextAreaElement>('score-input');
 const ownerKeyInput = element<HTMLInputElement>('owner-key');
 const selectedId = new URL(location.href).searchParams.get('piece') || demo.id;
 const editKey = new URLSearchParams(location.hash.slice(1)).get('edit') ?? '';
-let ownerKey = sessionStorage.getItem('hamnava-owner-key') ?? '';
+const editingAvailable = window.isSecureContext;
+let ownerKey = editingAvailable ? sessionStorage.getItem('hamnava-owner-key') ?? '' : '';
 let piece = demo;
 let selectedChord = '';
 let creating = false;
@@ -63,6 +64,7 @@ async function api<T>(path: string, options: { method?: string; key?: string; da
 
 const pieceUrl = (id: string) => {
   const url = new URL('/', location.origin);
+  if (url.hostname === 'music.amirhossein-danesh.ir') url.protocol = 'https:';
   if (id !== demo.id) url.searchParams.set('piece', id);
   return url;
 };
@@ -214,7 +216,7 @@ function renderVideo() {
 function renderPermissions() {
   const realPiece = piece.id !== demo.id;
   element('invite').hidden = !realPiece || !ownerKey;
-  element('edit').hidden = !realPiece || (!ownerKey && !editKey);
+  element('edit').hidden = !editingAvailable || !realPiece || (!ownerKey && !editKey);
   element('unlock').hidden = Boolean(ownerKey);
   element('owner-actions').hidden = !ownerKey;
 }
@@ -371,6 +373,7 @@ function noticeElementIntoView() {
 }
 
 async function initialize() {
+  element('manage').hidden = !editingAvailable;
   if (selectedId === demo.id) {
     showPiece(demo);
     renderList('piece-list', [demo]);
