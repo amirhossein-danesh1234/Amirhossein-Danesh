@@ -37,7 +37,7 @@ button.quiet { background: transparent; color: var(--dark); border-color: var(--
 h2, h3 { line-height: 1.4; margin: 0; }
 .card { padding: clamp(1rem, 3vw, 1.45rem); border: 1px solid var(--line); background: var(--paper); border-radius: 14px; min-width: 0; }
 .library, .owner { margin-block-end: 1.25rem; }
-.library h2, .owner h2 { font-size: 1.15rem; margin-bottom: .65rem; }
+.library h2, .owner h1 { font-size: 1.15rem; line-height: 1.4; margin: 0 0 .65rem; }
 .piece-list, .actions { display: flex; flex-wrap: wrap; gap: .55rem; align-items: center; }
 .piece-list:not(:empty) { margin-top: .65rem; }
 .piece-link { display: inline-block; font-weight: 600; border: 1px solid var(--line); padding: .38rem .65rem; border-radius: 7px; }
@@ -98,3 +98,9 @@ summary { cursor: pointer; color: var(--green); }
   .top-inner { justify-content: space-between; }
   .fields { grid-template-columns: 1fr; }
 }
+
+[data-music-mode="admin"] .wrap { width: min(850px, calc(100% - 2rem)); }
+[data-music-mode="admin"] .owner { margin-top: 1.25rem; }
+[data-music-mode="admin"] .profile { display: inline; }
+.score-tools { margin-block: .45rem; }
+.score-tools #chord-input { width: 5.8rem; }

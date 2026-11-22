@@ -4,7 +4,8 @@ import { DatabaseSync } from 'node:sqlite';
 import { resolveVideo } from './video.mjs';
 
 const { HAMNAVA_OWNER_KEY: owner, HAMNAVA_DATABASE: database } = process.env;
-const origin = process.env.HAMNAVA_ORIGIN ?? 'https://music.amirhossein-danesh.ir';
+const publicSite = new URL(process.env.HAMNAVA_ORIGIN ?? 'https://music.amirhossein-danesh.ir');
+const adminSite = new URL(process.env.HAMNAVA_ADMIN_ORIGIN ?? 'https://music-admin.amirhossein-danesh.ir');
 const keyPattern = /^[\w-]{43}$/;
 if (!owner || !keyPattern.test(owner) || !database) throw new Error('Hamnava requires an owner key and database path.');
 
@@ -86,12 +87,15 @@ function fields(input) {
 }
 
 async function handle(req, res) {
-  const path = new URL(req.url, origin).pathname;
   const { method, headers } = req;
+  const isAdminHost = headers.host === adminSite.host;
+  const site = isAdminHost ? adminSite : publicSite;
+  const path = new URL(req.url, site).pathname;
   const credential = headers.authorization?.replace(/^Bearer /, '') ?? '';
-  const isOwner = matches(credential, owner);
+  const isOwner = isAdminHost && matches(credential, owner);
+  if (!isAdminHost && path.startsWith('/api/owner/')) throw clientError(404, 'صفحه پیدا نشد.');
   if (method === 'POST' || method === 'PUT') {
-    if (headers.origin !== origin) throw clientError(403, 'این درخواست باید از خود هم‌نوا ارسال شود.');
+    if (headers.origin !== site.origin) throw clientError(403, 'این درخواست باید از خود هم‌نوا ارسال شود.');
   }
 
   if (path === '/api/pieces' && method === 'GET') return send(res, 200, list.all());
@@ -118,7 +122,8 @@ async function handle(req, res) {
     const row = get.get(id);
     if (!row) throw clientError(404, 'قطعه پیدا نشد.');
     if (method === 'GET') return send(res, 200, expose(row));
-    if (!isOwner && !matches(credential, invite(id))) throw clientError(403, 'لینک ویرایش معتبر نیست.');
+    const isGuest = !isAdminHost && matches(credential, invite(id));
+    if (!isOwner && !isGuest) throw clientError(403, 'دسترسی ویرایش معتبر نیست.');
     const input = await readJson(req);
     if (!Number.isSafeInteger(input.revision)) throw clientError(400, 'نسخهٔ قطعه معتبر نیست.');
     const values = isOwner

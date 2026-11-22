@@ -27,10 +27,11 @@ const videoUrl = element<HTMLInputElement>('video-url');
 const listed = element<HTMLInputElement>('listed');
 const scoreInput = element<HTMLTextAreaElement>('score-input');
 const ownerKeyInput = element<HTMLInputElement>('owner-key');
+const admin = document.body.dataset.musicMode === 'admin';
 const selectedId = new URL(location.href).searchParams.get('piece') || demo.id;
-const editKey = new URLSearchParams(location.hash.slice(1)).get('edit') ?? '';
+const editKey = admin ? '' : new URLSearchParams(location.hash.slice(1)).get('edit') ?? '';
 const editingAvailable = window.isSecureContext;
-let ownerKey = editingAvailable ? sessionStorage.getItem('hamnava-owner-key') ?? '' : '';
+let ownerKey = admin && editingAvailable ? sessionStorage.getItem('hamnava-owner-key') ?? '' : '';
 let piece = demo;
 let selectedChord = '';
 let creating = false;
@@ -62,9 +63,8 @@ async function api<T>(path: string, options: { method?: string; key?: string; da
   return data as T;
 }
 
-const pieceUrl = (id: string) => {
-  const url = new URL('/', location.origin);
-  if (url.hostname === 'music.amirhossein-danesh.ir') url.protocol = 'https:';
+const pieceUrl = (id: string, insidePanel = false) => {
+  const url = insidePanel ? new URL(location.pathname, location.origin) : new URL('https://music.amirhossein-danesh.ir/');
   if (id !== demo.id) url.searchParams.set('piece', id);
   return url;
 };
@@ -72,7 +72,7 @@ const pieceUrl = (id: string) => {
 function renderList(target: string, pieces: Pick<Piece, 'id' | 'title'>[]) {
   element(target).replaceChildren(...pieces.map((item) => {
     const link = node('a', 'piece-link', item.title);
-    link.href = pieceUrl(item.id).href;
+    link.href = pieceUrl(item.id, target === 'owner-list').href;
     if (item.id === piece.id) link.setAttribute('aria-current', 'page');
     return link;
   }));
@@ -239,6 +239,7 @@ function startEditor(isNew: boolean) {
   const editable = isNew ? { ...demo, title: '', artist: '', root: 0, mode: 'major', score: '' } : piece;
   element('editor-heading').textContent = isNew ? 'قطعهٔ تازه' : 'ویرایش قطعه';
   element('owner-fields').hidden = !ownerKey;
+  element('score-tools').hidden = !ownerKey;
   title.value = editable.title;
   artist.value = editable.artist;
   originalKey.value = String(editable.root);
@@ -275,17 +276,13 @@ async function loadLibrary() {
   element('library').hidden = false;
 }
 
-element('manage').addEventListener('click', () => {
-  element('owner').hidden = !element('owner').hidden;
-  if (!element('owner').hidden) (ownerKey ? element('new-piece') : ownerKeyInput).focus();
-});
 element<HTMLFormElement>('unlock').addEventListener('submit', async (event) => {
   event.preventDefault();
   try {
     await loadOwner(ownerKeyInput.value.trim());
     ownerKeyInput.value = '';
     notice('');
-    element('new-piece').focus();
+    if (!(await loadAdminPiece())) element('new-piece').focus();
   } catch (error) {
     notice(message(error), true);
   }
@@ -295,6 +292,7 @@ element('logout').addEventListener('click', () => {
   sessionStorage.removeItem('hamnava-owner-key');
   element('owner-list').replaceChildren();
   editor.hidden = true;
+  element('piece').hidden = true;
   renderPermissions();
   ownerKeyInput.focus();
 });
@@ -351,14 +349,14 @@ element<HTMLFormElement>('edit-form').addEventListener('submit', async (event) =
       method: isNew ? 'POST' : 'PUT', key: ownerKey || editKey, data,
     });
     if (isNew) {
-      location.assign(pieceUrl(next.id).href);
+      location.assign(pieceUrl(next.id, true).href);
       return;
     }
     showPiece(next);
     notice('قطعه ذخیره شد.');
     editor.hidden = true;
     element('edit').focus();
-    void loadLibrary().catch(() => {});
+    if (!admin) void loadLibrary().catch(() => {});
     if (ownerKey) void loadOwner(ownerKey).catch(() => {});
   } catch (error) {
     notice(message(error), true);
@@ -372,8 +370,71 @@ function noticeElementIntoView() {
   element('notice').scrollIntoView({ block: 'nearest' });
 }
 
+async function loadAdminPiece() {
+  if (selectedId === demo.id) return false;
+  showPiece(await api<Piece>('pieces/' + encodeURIComponent(selectedId)));
+  startEditor(false);
+  return true;
+}
+
+function insertScore(value: string, asLine: boolean) {
+  const { selectionStart, selectionEnd, value: current } = scoreInput;
+  const prefix = asLine && selectionStart > 0 && current[selectionStart - 1] !== '\n' ? '\n' : '';
+  const suffix = asLine && current[selectionEnd] !== '\n' ? '\n' : '';
+  if (current.length - (selectionEnd - selectionStart) + prefix.length + value.length + suffix.length > scoreInput.maxLength) {
+    notice('اندازهٔ متن بیش از حد مجاز است.', true);
+    return;
+  }
+  scoreInput.setRangeText(prefix + value + suffix, selectionStart, selectionEnd, 'end');
+  scoreInput.focus();
+}
+
+const chordInput = element<HTMLInputElement>('chord-input');
+element('add-chord').addEventListener('click', () => {
+  const symbol = chordInput.value.trim();
+  if (!chord(symbol)) {
+    notice('آکورد را به شکل Am، C# یا G/B وارد کن.', true);
+    chordInput.focus();
+    return;
+  }
+  notice('');
+  insertScore('[' + symbol + ']', false);
+});
+chordInput.addEventListener('keydown', (event) => {
+  if (event.key !== 'Enter') return;
+  event.preventDefault();
+  element('add-chord').click();
+});
+for (const button of document.querySelectorAll<HTMLButtonElement>('[data-score-line]')) {
+  button.addEventListener('click', () => insertScore(button.dataset.scoreLine!, true));
+}
+
 async function initialize() {
-  element('manage').hidden = !editingAvailable;
+  if (admin) {
+    if (!editingAvailable) {
+      notice('برای ورود به پنل، آدرس را با HTTPS باز کن.', true);
+      return;
+    }
+    element('owner').hidden = false;
+    if (ownerKey) {
+      try {
+        await loadOwner(ownerKey);
+      } catch (error) {
+        ownerKey = '';
+        sessionStorage.removeItem('hamnava-owner-key');
+        renderPermissions();
+        notice(message(error), true);
+        return;
+      }
+      try {
+        await loadAdminPiece();
+      } catch (error) {
+        notice(message(error), true);
+      }
+    }
+    return;
+  }
+
   if (selectedId === demo.id) {
     showPiece(demo);
     renderList('piece-list', [demo]);
@@ -386,15 +447,6 @@ async function initialize() {
     }
   }
   void loadLibrary().catch(() => {});
-  if (ownerKey) {
-    try {
-      await loadOwner(ownerKey);
-    } catch {
-      ownerKey = '';
-      sessionStorage.removeItem('hamnava-owner-key');
-      renderPermissions();
-    }
-  }
 }
 
 void initialize();

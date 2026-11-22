@@ -12,6 +12,7 @@ backup=$(mktemp -d)
 test -s /etc/hamnava/production.env
 test -s "$release/dist/index.html"
 test -s "$release/dist/music/index.html"
+test -s "$release/dist/music-admin/index.html"
 test ! -e "$site/current.next"
 if [[ -e $service ]]; then cp -p "$service" "$backup/service"; fi
 if [[ -e $vhost ]]; then cp -p "$vhost" "$backup/vhost"; fi
@@ -68,5 +69,6 @@ check_origin() {
 check_origin amirhossein-danesh.ir /
 check_origin music.amirhossein-danesh.ir /
 check_origin music.amirhossein-danesh.ir /api/pieces
+check_origin music-admin.amirhossein-danesh.ir /
 cat "$site/current/REVISION"
 rm -f "$archive"

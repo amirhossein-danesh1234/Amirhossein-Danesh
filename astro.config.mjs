@@ -4,5 +4,7 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://amirhossein-danesh.ir',
   output: 'static',
-  integrations: [sitemap()],
+  integrations: [sitemap({
+    filter: (page) => !['/music', '/music-admin'].includes(new URL(page).pathname.replace(/\/$/, '')),
+  })],
 });
