@@ -13,12 +13,12 @@ const { admin = false } = Astro.props as { admin?: boolean };
     <meta name="description" content="دفتر اجرای امیرحسین دانش برای پیانو، تار، سه‌تار و هم‌خوانی." />
     <title>{admin ? "مدیریت هم‌نوا" : "هم‌نوا | دفتر تمرین و اجرا"}</title>
     {admin ? <meta name="robots" content="noindex, nofollow" /> : <link rel="canonical" href="https://music.amirhossein-danesh.ir/" />}
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/brand/hamnava-logo.png" type="image/png" sizes="96x96" />
   </head>
   <body data-music-mode={admin ? "admin" : "public"}>
     <header class="top">
       <nav class="wrap top-inner" aria-label="ناوبری اصلی">
-        <a class="brand" href="/"><span class="brand-icon" aria-hidden="true">♫</span> {admin ? "مدیریت هم‌نوا" : "هم‌نوا"}</a>
+        <a class="brand" href="/"><img class="brand-icon" src="/brand/hamnava-logo.png" width="36" height="36" alt="" /> {admin ? "مدیریت هم‌نوا" : "هم‌نوا"}</a>
         {admin ? <a class="profile" href="https://music.amirhossein-danesh.ir/">سایت هم‌نوا</a> : <a class="profile" href="https://amirhossein-danesh.ir/fa/">امیرحسین دانش</a>}
       </nav>
     </header>
