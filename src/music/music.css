@@ -2,7 +2,7 @@
   font-family: Peyda, Tahoma, sans-serif;
   color: #192e29;
   background: #f3f3ec;
-  --green: #1c5245;
+  --green: #2A3934;
   --dark: #153e34;
   --muted: #51655e;
   --line: #d7dfd4;
@@ -62,6 +62,7 @@ input[type="checkbox"] { accent-color: var(--green); inline-size: 1.1rem; block-
 .chord-tag[aria-pressed="true"] { background: var(--green); color: white; }
 .chord-start.solo { min-width: 4.3ch; }
 .chord-start.solo .chord-tag { position: static; }
+.chord-start.intro { min-width: 3.5ch; }
 .cue { display: flex; flex-wrap: wrap; gap: .4rem .75rem; align-items: baseline; margin-block: .75rem; padding: .6rem .75rem; border-radius: 8px; background: #f3ecdb; border-inline-start: 3px solid #aa752f; }
 .cue.melody { background: #e9f0e4; border-color: #66865f; }
 .cue code { color: #193b32; overflow-wrap: anywhere; }
@@ -105,3 +106,22 @@ summary { cursor: pointer; color: var(--green); }
 [data-music-mode="admin"] .profile { display: inline; }
 .score-tools { margin-block: .45rem; }
 .score-tools #chord-input { width: 5.8rem; }
+
+.visual-line { margin-block: .6rem; padding: .5rem; border: 1px solid var(--line); border-radius: .5rem; }
+.visual-line input { flex: 1 1 100%; }
+.chord-start { min-inline-size: max-content; }
+.chord-start.intro { display: inline-grid; min-inline-size: 3.5ch; vertical-align: baseline; }
+.chord-start.intro::after { content: '\00a0'; }
+#score .lyric { font-size: calc(clamp(1.06rem, 3vw, 1.27rem) * var(--lyric-scale, 1)); }
+#score .chord-tag { font-size: calc(.79rem * var(--chord-scale, 1)); }
+.performance .hero, .performance .library, .performance .top, .performance .footer,
+.performance .side, .performance .owner, .performance .editor { display: none; }
+.performance .stage { display: block; }
+.performance .wrap { width: min(96vw, 70rem); }
+.performance-controls { margin-block: .75rem; }
+.performance-controls label { display: flex; gap: .4rem; align-items: center; }
+.performance-controls input[type=number] { max-width: 5rem; }
+.performance-controls button { min-height: 2.75rem; }
+.take-row { margin-block: .65rem; border: 1px solid var(--line); min-width: 0; }
+#video audio { width: 100%; }
+.take { padding: .5rem; border-bottom: 1px solid var(--line); }

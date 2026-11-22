@@ -13,7 +13,7 @@ const pitch = (name: string) => naturalPitches[name[0]] + ('#♯'.includes(name[
 
 export function chord(symbol: string, shift = 0) {
   const match = /^([A-G][#b♯♭]?)([^/]*)(?:\/([A-G][#b♯♭]?))?$/.exec(symbol);
-  if (!match || !Object.hasOwn(chordIntervals, match[2])) return null;
+  if (!Number.isInteger(shift) || !match || !Object.hasOwn(chordIntervals, match[2])) return null;
   const [, root, quality, bass] = match;
   const rootPitch = modulo(pitch(root) + shift);
   const label = (note: string) => shift === 0 ? note.replace('#', '♯').replace('b', '♭') : pitchNames[modulo(pitch(note) + shift)];
@@ -27,11 +27,12 @@ export function chord(symbol: string, shift = 0) {
 }
 
 export function noteSequence(source: string, shift: number) {
-  return source.split(/\s+/).map((token) => {
+  return source.split(/(\s+)/).map((token) => {
     const match = /^([A-G][#b♯♭]?)(-?\d)?$/.exec(token);
-    if (!match || shift === 0) return token;
+    // Koron and sori require a separate tuning model. Preserve those tokens as authored.
+    if (!match || !Number.isInteger(shift) || shift === 0) return token;
     const [, name, octave] = match;
     const position = pitch(name) + shift;
     return pitchNames[modulo(position)] + (octave === undefined ? '' : String(Number(octave) + Math.floor(position / 12)));
-  }).join(' ');
+  }).join('');
 }

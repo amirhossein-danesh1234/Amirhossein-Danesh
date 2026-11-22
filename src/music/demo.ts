@@ -1,6 +1,16 @@
+export type Take = {
+  id?: string;
+  title: string; url: string; kind: 'audio' | 'video'; recorded: string;
+  instrument: string; notes: string; visibility: 'public' | 'private';
+};
+
 export type Piece = {
   id: string;
   title: string;
+  slug?: string;
+  visibility?: 'published' | 'unlisted' | 'private' | 'draft';
+  metadata?: Record<string, string>;
+  takes?: Take[];
   artist: string;
   root: number;
   mode: 'major' | 'minor';

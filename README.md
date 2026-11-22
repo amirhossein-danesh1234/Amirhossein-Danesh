@@ -39,3 +39,15 @@ At https://music-admin.amirhossein-danesh.ir/, sign in with the admin username a
 ## Future path
 
 The UI consumes structured data from `src/data/`, so those sources can later be replaced by a CMS, Notion, Supabase, API, or database without coupling content to page markup.
+
+### Hamnava upgrades and recordings
+
+Run the browser acceptance checks from this repository with Node 24 and Chrome. Install Playwright in the local environment or set HAMNAVA_PLAYWRIGHT to its existing module directory, then run npm run build and node tests/hamnava.mjs. The test starts two loopback sites and a temporary SQLite database populated with an old-format song.
+
+The service migrates SQLite in a transaction at startup. It assigns slugs to existing songs, preserves old IDs and editing links, maps published and unlisted songs from their original list setting, and copies existing video references into the recordings archive. Retain an SQLite online backup before the first deployment.
+
+Deploy from the clean GitHub main revision with scripts/deploy.ps1. The activation script checks Nginx and restores the previous release on activation failure. Before manually rolling back to a pre-visibility release after the new version has accepted writes, take the service offline. Older code cannot enforce the new private and draft rules. Keep a backup of the current data and prefer a forward fix.
+
+Uploads use the service state directory configured by HAMNAVA_MEDIA_DIR. The default deployment stores files under /var/lib/hamnava/media. Individual files are limited to 32 MiB and total stored media to 256 MiB. Include the media directory in backups. The public API serves uploaded files only when an accessible song links to them through a public recording. External media links follow the access rules of their source.
+
+Practice history, the microphone tuner, structured scores and MusicXML, arrangements, and camera recording are future product work. Practice history can build on the piece and take IDs. A tuner needs explicit microphone access and calibration. Structured notation needs a duration and pitch model before adding import or export. Arrangements and capture can build on the recording archive. Current transposition uses twelve semitones. Koron and sori tokens are preserved as written.

@@ -50,6 +50,7 @@ const { admin = false } = Astro.props as { admin?: boolean };
             <button id="new-piece" type="button">قطعهٔ تازه</button>
             <button class="quiet" id="logout" type="button">خروج</button>
           </div>
+          <label>جست‌وجوی قطعه <input id="owner-search" type="search" /></label>
           <div id="owner-list" class="piece-list"></div>
         </div>
       </section>
@@ -59,18 +60,37 @@ const { admin = false } = Astro.props as { admin?: boolean };
         <form id="edit-form">
           <div class="fields" id="owner-fields">
             <label>نام قطعه <input id="title" maxlength="100" /></label>
+            <label>نشانی قطعه <input id="slug" maxlength="100" /><small id="slug-preview" dir="ltr"></small></label>
             <label>خواننده یا توضیح کوتاه <input id="artist" maxlength="120" /></label>
             <label>گام اصلی <select id="original-key" dir="ltr">{pitchNames.map((name, i) => <option value={i}>{name}</option>)}</select></label>
             <label>نوع گام <select id="mode"><option value="major">ماژور</option><option value="minor">مینور</option></select></label>
-            <label class="wide">پیوند ویدیوی اجرا <input id="video-url" type="url" maxlength="2048" dir="ltr" placeholder="https://…" /><small>پیوند مستقیم MP4 یا WebM، یوتیوب یا آپارات</small></label>
-            <label class="wide check"><input id="listed" type="checkbox" /> نمایش قطعه در فهرست عمومی</label>
+            <label>وضعیت انتشار <select id="visibility"><option value="draft">پیش‌نویس</option><option value="published">منتشرشده</option><option value="unlisted">دارای پیوند</option><option value="private">خصوصی</option></select></label>
+            <details class="wide"><summary>مشخصات موسیقی</summary>
+              <div class="fields" id="metadata-fields">
+                {Object.entries({composer:'آهنگساز',lyricist:'ترانه‌سرا',instrument:'ساز اصلی',timeSignature:'کسر میزان',rhythm:'ریتم',tempo:'سرعت (BPM)',dastgah:'دستگاه یا آواز',difficulty:'درجه سختی',notes:'توضیحات'}).map(([name,label]) =>
+                  <label>{label}<input data-metadata={name} maxlength={name === 'notes' ? 2000 : 120} /></label>
+                )}
+              </div>
+            </details>
+            <details class="wide"><summary>اجراهای ضبط‌شده</summary>
+              <div id="take-fields"></div>
+              <button type="button" id="add-take">افزودن اجرا</button>
+            </details>
           </div>
-          <label for="score-input">متن، آکورد و نشانه‌های اجرا</label>
+          <div class="actions" id="editor-modes">
+            <button type="button" id="visual-mode" aria-pressed="true">ویرایش تصویری</button>
+            <button type="button" id="raw-mode" aria-pressed="false">متن نشانه‌گذاری‌شده</button>
+          </div>
+          <div id="visual-score"></div>
+          <label for="score-input" id="score-label">متن، آکورد و نشانه‌های اجرا</label>
           <textarea id="score-input" rows="10" maxlength="16000" placeholder="متن ترانه را سطر به سطر بنویسید." aria-describedby="score-format"></textarea>
           <div id="score-tools" class="actions score-tools" aria-label="ابزارهای متن" hidden>
             <label for="chord-input">آکورد</label>
-            <input id="chord-input" dir="ltr" maxlength="14" placeholder="Am" />
+            <input id="chord-input" dir="ltr" maxlength="14" placeholder="Am" list="common-chords" />
+            <datalist id="common-chords"></datalist>
             <button class="quiet" type="button" id="add-chord">درج آکورد</button>
+            <button class="quiet" type="button" id="add-intro">آکورد پیش از آواز</button>
+            <button class="quiet" type="button" data-score-line="# بخش تازه">درج بخش</button>
             <button class="quiet" type="button" data-score-line="! ۲ ضرب مکث">درج مکث</button>
             <button class="quiet" type="button" data-score-line="~ تار | A4 C5 E5">درج ملودی</button>
           </div>
@@ -81,6 +101,9 @@ const { admin = false } = Astro.props as { admin?: boolean };
           </details>
           <div class="actions">
             <button type="submit">ذخیره</button>
+            <button class="quiet" type="button" id="duplicate" hidden>ساخت کپی</button>
+            <button class="quiet" type="button" id="delete-piece" hidden>حذف</button>
+            <button class="quiet" type="button" id="revoke-invite" hidden>لغو پیوند قبلی ویرایش</button>
             <button class="quiet" type="button" id="cancel">انصراف</button>
           </div>
         </form>
@@ -90,6 +113,8 @@ const { admin = false } = Astro.props as { admin?: boolean };
           <div>
             <h2 id="piece-title"></h2>
             <p id="piece-artist"></p>
+            <p id="piece-key"></p>
+            <p id="piece-details"></p>
           </div>
           <div class="actions">
             <button class="quiet" type="button" id="share" hidden>لینک مشاهده</button>
@@ -106,6 +131,16 @@ const { admin = false } = Astro.props as { admin?: boolean };
                 <label for="key">گام <select dir="ltr" id="key">{pitchNames.map((name, i) => <option value={i}>{name}</option>)}</select></label>
                 <button class="quiet" type="button" id="reset-key" hidden>گام اصلی</button>
               </div>
+            </div>
+            <div class="actions performance-controls" id="performance-controls">
+              <button type="button" id="perform" aria-pressed="false">حالت اجرا</button>
+              <label>اندازهٔ متن <input id="lyric-size" type="range" min="90" max="180" value="100" /></label>
+              <label>اندازهٔ آکورد <input id="chord-size" type="range" min="80" max="180" value="100" /></label>
+              <label>سرعت پیمایش <input id="scroll-speed" type="range" min="8" max="120" value="27" /></label>
+              <button type="button" id="auto-scroll" aria-pressed="false">پیمایش خودکار</button>
+              <label>BPM <input id="metronome-bpm" type="number" min="20" max="300" value="90" /></label>
+              <button type="button" id="metronome" aria-pressed="false">مترونوم</button>
+              <label>انتقال <select id="shift-direction"><option value="nearest">نزدیک‌ترین</option><option value="up">بالا</option><option value="down">پایین</option></select></label>
             </div>
             <div id="score"></div>
           </article>

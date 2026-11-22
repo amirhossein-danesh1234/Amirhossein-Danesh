@@ -7,6 +7,7 @@ Type=simple
 DynamicUser=yes
 StateDirectory=hamnava
 UMask=0077
+Environment=HAMNAVA_MEDIA_DIR=/var/lib/hamnava/media
 Environment=HAMNAVA_DATABASE=/var/lib/hamnava/pieces.sqlite
 EnvironmentFile=/etc/hamnava/production.env
 ExecStart=/bin/sh -c 'cd -P /var/www/amirhossein-danesh.ir/current && exec /opt/node/bin/node ../ops/music/server.mjs'
