@@ -13,6 +13,7 @@ function element<T extends HTMLElement = HTMLElement>(id: string) {
 
 const key = element<HTMLSelectElement>('key');
 const chords = element<HTMLInputElement>('chords');
+const voice = element<HTMLInputElement>('voice');
 const songPage = bindSongPage(element('piece'));
 const editor = element('editor');
 const title = element<HTMLInputElement>('title');
@@ -39,7 +40,7 @@ const showOwnerList = bindSongLibrary(element('owner-list'), element('owner-sear
 const showLibrary = admin ? undefined : bindSongLibrary(element('piece-list'), element('library-search'), (song) => {
   const url = pieceUrl(song.id, false, song.slug);
   return url.pathname + url.search;
-});
+}, element('library-count'));
 let piece = demo;
 let creating = false;
 let saving = false;
@@ -220,6 +221,7 @@ const repaint = () => {
 };
 const visualEditor = bindVisualEditor(scoreInput, repaint);
 chords.addEventListener('change', repaint);
+voice.addEventListener('change', repaint);
 key.addEventListener('change', repaint);
 direction.addEventListener('change', repaint);
 bindPerformance();
@@ -240,7 +242,12 @@ element('reset-key').addEventListener('click', () => {
   key.focus();
   repaint();
 });
-element('share').addEventListener('click', () => void copy(pieceUrl(piece.id, false, piece.slug)));
+element('share').addEventListener('click', () => {
+  const url = pieceUrl(piece.id, false, piece.slug);
+  if (!admin && voice.checked) url.searchParams.set('view', 'lyrics');
+  if (!admin && Number(key.value) !== piece.root) url.searchParams.set('key', key.value);
+  void copy(url);
+});
 element('invite').addEventListener('click', async () => {
   try {
     const { key: token } = await api<{ key: string }>('owner/pieces/' + piece.id + '/invite');
@@ -441,7 +448,7 @@ async function initialize() {
     try {
       const found = await api<Piece>('slug/' + encodeURIComponent(decodeURIComponent(selectedSlug)));
       showPiece(found);
-      if (found.slug !== decodeURIComponent(selectedSlug)) history.replaceState(null, '', pieceUrl(found.id, false, found.slug).pathname + location.hash);
+      if (found.slug !== decodeURIComponent(selectedSlug)) history.replaceState(null, '', pieceUrl(found.id, false, found.slug).pathname + location.search + location.hash);
     } catch (error) {
       notice(message(error), true);
     }
@@ -453,6 +460,13 @@ async function initialize() {
     } catch (error) {
       notice(message(error), true);
     }
+  }
+  if (!element('piece').hidden) {
+    const shared = new URLSearchParams(location.search);
+    const tonic = shared.get('key');
+    if (shared.get('view') === 'lyrics') voice.checked = true;
+    if (tonic !== null && /^(?:[0-9]|1[01])$/.test(tonic)) key.value = tonic;
+    if (voice.checked || Number(key.value) !== piece.root) repaint();
   }
   if (!selectedSlug && !selectedId) {
     element('library').hidden = false;

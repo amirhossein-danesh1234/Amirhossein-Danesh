@@ -11,6 +11,18 @@ export function createScoreRenderer(score: HTMLElement, piano: HTMLElement, pian
   let selectedChord = '';
   let semitones = 0;
   let showChords = true;
+  const pianoHome = pianoPanel.parentElement!;
+  const compact = window.matchMedia('(max-width: 760px)');
+  let selectedIndex = -1;
+  function placePiano() {
+    const anchor = score.querySelectorAll('button[data-chord]')[selectedIndex];
+    if (compact.matches && showChords && anchor) {
+      anchor.closest('.lyric')?.after(pianoPanel);
+    } else if (pianoPanel.parentElement !== pianoHome) {
+      pianoHome.append(pianoPanel);
+    }
+  }
+  compact.addEventListener('change', placePiano);
   function renderPiano() {
     const active = selectedChord && chord(selectedChord, semitones);
     if (!active) {
@@ -77,7 +89,7 @@ export function createScoreRenderer(score: HTMLElement, piano: HTMLElement, pian
       button.setAttribute('aria-label', 'آکورد ' + transposed.label + ' روی پیانو');
       button.setAttribute('aria-pressed', String(symbol.trim() === selectedChord));
       anchor.append(button);
-    if (word && !introductory) anchor.append(node('span', 'chord-word', word));
+      if (word && !introductory) anchor.append(node('span', 'chord-word', word));
       paragraph.classList.add('has-chords');
       if (introductory) {
         anchor.style.marginInlineEnd = Math.min(leading.length * 0.18, 1.5) + 'em';
@@ -115,10 +127,12 @@ export function createScoreRenderer(score: HTMLElement, piano: HTMLElement, pian
         rows.push(cue);
         continue;
       }
-      rows.push(lyricLine(line));
+      const lyric = lyricLine(line);
+      if (showChords || lyric.textContent?.trim()) rows.push(lyric);
     }
     score.replaceChildren(...(rows.length ? rows : [node('p', 'empty-score', 'متن این قطعه هنوز وارد نشده است.')]));
     pianoPanel.hidden = !showChords || !score.querySelector('button[data-chord]');
+    placePiano();
     renderPiano();
   }
 
@@ -126,12 +140,14 @@ export function createScoreRenderer(score: HTMLElement, piano: HTMLElement, pian
     const button = (event.target as HTMLElement).closest<HTMLButtonElement>('button[data-chord]');
     if (!button) return;
     selectedChord = button.dataset.chord ?? '';
+    selectedIndex = Array.from(score.querySelectorAll('button[data-chord]')).indexOf(button);
     for (const tag of score.querySelectorAll<HTMLButtonElement>('button[data-chord]')) {
       tag.setAttribute('aria-pressed', String(tag.dataset.chord === selectedChord));
     }
     pianoPanel.open = true;
+    placePiano();
     renderPiano();
   });
 
-  return { render, reset() { selectedChord = ''; pianoPanel.open = false; } };
+  return { render, reset() { selectedChord = ''; selectedIndex = -1; pianoPanel.open = !compact.matches; } };
 }

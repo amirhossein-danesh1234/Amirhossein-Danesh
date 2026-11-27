@@ -102,7 +102,11 @@ export function bindPerformance() {
     perform.setAttribute('aria-pressed', String(value));
     perform.textContent = value ? 'پایان اجرا' : 'حالت اجرا';
     if (value) byId('piece').scrollIntoView();
-    else toggleScroll(false);
+    else {
+      toggleScroll(false);
+      clearTimeout(clock);
+      metronome.setAttribute('aria-pressed', 'false');
+    }
   }
   perform.addEventListener('click', () => enter(!document.body.classList.contains('performance')));
   window.addEventListener('keydown', (event) => {

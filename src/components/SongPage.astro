@@ -22,18 +22,20 @@ const { admin = false } = Astro.props as { admin?: boolean };
       </details>
     </header>
     <PerformanceToolbar />
-    <article class="sheet" aria-label="متن و آکورد">
-      <div id="score"></div>
-    </article>
-    <div class="song-extras">
-      <details id="recordings-panel" hidden>
-        <summary>اجراهای ضبط‌شده</summary>
-        <div id="video"></div>
-      </details>
-      <details id="piano-card" hidden>
-        <summary>آکورد روی پیانو</summary>
-        <div id="piano"></div>
-      </details>
+    <div class="practice-layout">
+      <article class="sheet" aria-label="متن و آکورد">
+        <div id="score"></div>
+      </article>
+      <div class="song-extras">
+        <details id="recordings-panel" hidden>
+          <summary>اجراهای ضبط‌شده</summary>
+          <div id="video"></div>
+        </details>
+        <details id="piano-card" open hidden>
+          <summary>آکورد روی پیانو</summary>
+          <div id="piano"></div>
+        </details>
+      </div>
     </div>
   </section>
 </details>

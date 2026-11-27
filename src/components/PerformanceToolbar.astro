@@ -3,6 +3,10 @@ import { pitchNames } from '../music/notation';
 ---
 <div class="performance-toolbar" id="performance-controls">
   <div class="actions toolbar-main" role="group" aria-label="کنترل‌های اجرا">
+    <div class="reading-mode" role="group" aria-label="نمایش قطعه">
+      <label><input id="chords" type="radio" name="reading-mode" checked /><span>متن و آکورد</span></label>
+      <label><input id="voice" type="radio" name="reading-mode" /><span>فقط متن</span></label>
+    </div>
     <label class="key-control">گام <select dir="ltr" id="key">{pitchNames.map((name, i) => <option value={i}>{name}</option>)}</select></label>
     <button type="button" id="perform" aria-pressed="false">حالت اجرا</button>
     <button class="quiet performance-only" type="button" id="auto-scroll" aria-pressed="false">پیمایش خودکار</button>
@@ -10,7 +14,6 @@ import { pitchNames } from '../music/notation';
     <button class="quiet" type="button" id="settings-trigger" aria-expanded="false" aria-controls="performance-settings">تنظیمات</button>
   </div>
   <div id="performance-settings" class="performance-settings" hidden>
-    <label for="chords"><input type="checkbox" id="chords" checked /> نمایش آکوردها</label>
     <button class="quiet" type="button" id="reset-key" hidden>بازگشت به گام اصلی</button>
     <label>اندازهٔ متن <input id="lyric-size" type="range" min="90" max="180" value="100" /></label>
     <label>اندازهٔ آکورد <input id="chord-size" type="range" min="80" max="180" value="100" /></label>

@@ -1,6 +1,7 @@
 ---
 import '../styles/peyda.css';
 import '../music/music.css';
+import '../music/notebook.css';
 import SongLibrary from './SongLibrary.astro';
 import SongPage from './SongPage.astro';
 import AdminSongList from './AdminSongList.astro';
@@ -22,7 +23,7 @@ const { admin = false } = Astro.props as { admin?: boolean };
     <header class="top">
       <nav class="wrap top-inner" aria-label="ناوبری اصلی">
         <a class="brand" href="/"><img class="brand-icon" src="/brand/hamnava-logo.png" width="36" height="36" alt="" /> {admin ? "مدیریت هم‌نوا" : "هم‌نوا"}</a>
-        {admin ? <a class="profile" href="https://music.amirhossein-danesh.ir/">سایت هم‌نوا</a> : <a class="profile" href="https://amirhossein-danesh.ir/fa/">امیرحسین دانش</a>}
+        {admin ? <a class="profile" href="https://music.amirhossein-danesh.ir/">سایت هم‌نوا</a> : <div class="public-nav"><a href="/">قطعه‌ها</a><a class="profile" href="https://amirhossein-danesh.ir/fa/">امیرحسین دانش <span aria-hidden="true">↖</span></a></div>}
       </nav>
     </header>
     <main class="wrap">

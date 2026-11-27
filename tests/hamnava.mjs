@@ -219,6 +219,7 @@ try {
   assert.deepEqual(await rows.nth(3).locator('.intro button').allTextContents(), ['Am','G']);
   assert.equal(await rows.nth(4).locator('.solo').count(), 2);
   await rows.nth(1).locator('.intro button').click();
+  assert.equal(await rows.nth(1).evaluate((row) => row.nextElementSibling?.id), 'piano-card');
   assert.match(await mobile.locator('#piano').innerText(), /Am/);
   assert.equal(await mobile.locator('#key option').first().textContent(), 'C');
   await mobile.locator('#key').selectOption('2');
@@ -226,7 +227,9 @@ try {
   assert.deepEqual(await rows.nth(3).locator('.intro button').allTextContents(), ['Dm','C']);
   assert.equal(await mobile.locator('#performance-settings').isVisible(), false);
   await mobile.locator('#settings-trigger').click();
-  await mobile.locator('#chords').uncheck();
+  await mobile.locator('#voice').check();
+  assert.equal(await mobile.locator('#score .chord-tag').count(), 0);
+  assert.equal(await mobile.locator('#piano-card').isVisible(), false);
   assert.equal(await rows.nth(1).textContent(), 'من بعد');
   assert.equal(await mobile.evaluate(() => document.documentElement.scrollWidth), 390);
   await mobile.locator('#chords').check();
@@ -240,6 +243,12 @@ try {
   assert(await mobile.locator('body.performance').count());
   await mobile.keyboard.press('Escape');
   assert.equal(await mobile.locator('body.performance').count(), 0);
+
+  await mobile.goto(origins.music + '/' + encodeURIComponent(saved.slug) + '?view=lyrics&key=2');
+  await mobile.locator('#piece-title').waitFor();
+  assert(await mobile.locator('#voice').isChecked());
+  assert.equal(await mobile.locator('#key').inputValue(), '2');
+  assert.equal(await mobile.locator('#score .chord-tag').count(), 0);
 
   const alias = await callAdmin('/api/pieces/' + id, 'PUT', { ...saved, slug:'رهایم-کن-تازه', visibility:'unlisted' });
   assert.equal(alias.status, 200);
